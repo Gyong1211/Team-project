@@ -11,3 +11,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+INSTALLED_APPS.append('django_extensions')
+
+WSGI_APPLICATION = 'config.wsgi.debug.application'
