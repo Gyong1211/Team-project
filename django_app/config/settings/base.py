@@ -24,6 +24,9 @@ config_secret_common = json.loads(open(CONFIG_SECRET_COMMON_FILE).read())
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config_secret_common['django']['secret_key']
 
+# Custom User Model
+AUTH_USER_MODEL = 'member.MyUser'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -34,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'member',
-    'post'
+    'post',
 ]
 
 MIDDLEWARE = [
