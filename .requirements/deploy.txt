@@ -3,3 +3,4 @@ djangorestframework<3.7
 psycopg2<2.8
 boto3<1.5
 django-storages<1.7
+Pillow<4.3
