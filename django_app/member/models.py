@@ -42,20 +42,18 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     Email, password and nickname are required. Other fields are optional.
     """
     email = models.EmailField(_('이메일'), unique=True)
-    first_name = models.CharField(_('이름'), max_length=10, blank=True)
-    last_name = models.CharField(_('성'), max_length=10, blank=True)
-    nickname = models.CharField(_('닉네임'), max_length=12, unique=True)
+    username = models.CharField(_('이름'), max_length=12, blank=True)
+    nickname = models.CharField(_('닉네임'), max_length=16, unique=True)
     is_staff = models.BooleanField(
         _('스태프 권한'),
         default=False,
-        help_text=_('Designates whether the user can log into this admin site.'),
+        help_text=_('Admin page에 접속할 수 있는 권한을 부여합니다.'),
     )
     is_active = models.BooleanField(
         _('계정 활성화'),
         default=True,
         help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
+            '계정을 삭제하지 않고 비활성화 시킬때 체크를 해제하십시오.'
         ),
     )
     date_joined = models.DateTimeField(_('가입일자'), default=timezone.now)
@@ -75,10 +73,10 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         self.email = self.__class__.objects.normalize_email(self.email)
 
     def get_full_name(self):
-        "유저의 성과 이름을 합쳐서 반환합니다."
-        full_name = '%s %s' % (self.last_name, self.first_name)
-        return full_name.strip()
+        "유저의 이름(실명)을 반환합니다."
+        username = self.username
+        return username.strip()
 
     def get_short_name(self):
-        "유저의 이름을 반환합니다."
-        return self.first_name
+        "유저의 닉네임을 반환합니다. (Django admin page에서 사용)"
+        return self.nickname
