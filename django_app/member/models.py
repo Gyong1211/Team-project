@@ -104,7 +104,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         )
 
     def follow_toggle(self, user):
-        relation,relation_created=self.following.get_or_create(to_user=user)
+        relation, relation_created = self.following.get_or_create(to_user=user)
         if not relation_created:
             relation.delete()
         else:
@@ -117,7 +117,7 @@ class UserRelation(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return 'Relatino from {} to {}'.format(
+        return 'Relation from {} to {}'.format(
             self.from_user,
             self.to_user,
         )
