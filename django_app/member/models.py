@@ -80,3 +80,49 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         "유저의 닉네임을 반환합니다. (Django admin page에서 사용)"
         return self.nickname
+
+    def follow(self, user):
+        if not isinstance(user, MyUser):
+            raise ValueError("'user' 는 반드시 MyUser 인자여야 합니다")
+        self.following.get_or_create(
+            from_user=user,
+        )
+
+        UserRelation.objects.get_or_create(
+            from_user=self,
+            to_user=user
+        )
+
+        user.follower.get_or_create(
+            from_user=self
+        )
+
+    def unfollow(self, user):
+        UserRelation.objects.filter(
+            from_user=self,
+            to_user=user,
+        )
+
+    def follow_toggle(self, user):
+        relation, relation_created = self.following.get_or_create(to_user=user)
+        if not relation_created:
+            relation.delete()
+        else:
+            return relation
+
+
+class UserRelation(models.Model):
+    from_user = models.ForeignKey(MyUser, related_name='following')
+    to_user = models.ForeignKey(MyUser, related_name='follower')
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Relation from {} to {}'.format(
+            self.from_user,
+            self.to_user,
+        )
+
+    class Meta:
+        unique_together = (
+            ('from_user', 'to_user'),
+        )

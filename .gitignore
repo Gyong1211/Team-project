@@ -4,6 +4,8 @@
 *.swp
 *.idea
 .config_secret/
+.static_root/
+.media/
 
 ### Django ###
 *.log
