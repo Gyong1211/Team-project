@@ -25,6 +25,7 @@ class MyGroup(models.Model):
     group_type = models.CharField(
         max_length=10,
         choices=GROUP_TYPE,
+        default='PUBLIC',
     )
     profile_img = models.ImageField(null=True)
     description = models.CharField(max_length=120)
@@ -37,6 +38,12 @@ class MyGroup(models.Model):
         'GroupTag',
     )
     objects = MyGroupManager()
+
+    def __str__(self):
+        return 'Group : {}'.format(self.name)
+
+    def member_count(self):
+        return self.members.count()
 
 
 class Membership(models.Model):
