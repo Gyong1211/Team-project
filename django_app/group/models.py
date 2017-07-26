@@ -2,6 +2,15 @@ from django.conf import settings
 from django.db import models
 
 
+class MyGroupManager(models.Manager):
+    def create(self, **kwargs):
+        obj = self.model(**kwargs)
+        self._for_write = True
+        obj.save(force_insert=True, using=self.db)
+        Membership.objects.get_or_create(user=obj.owner, group=obj)
+        return obj
+
+
 class MyGroup(models.Model):
     GROUP_TYPE = (
         ('PUBLIC', 'Public'),
@@ -27,6 +36,7 @@ class MyGroup(models.Model):
     tags = models.ManyToManyField(
         'GroupTag',
     )
+    objects = MyGroupManager()
 
 
 class Membership(models.Model):
