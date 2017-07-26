@@ -22,7 +22,10 @@ class MyGroup(models.Model):
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='Membership',
-        related_name='joined_groups',
+        related_name='groups_joined',
+    )
+    tags = models.ManyToManyField(
+        'GroupTag',
     )
 
 
@@ -41,3 +44,7 @@ class Membership(models.Model):
         unique_together = (
             ('user', 'group')
         )
+
+
+class GroupTag(models.Model):
+    name = models.CharField(max_length=128)
