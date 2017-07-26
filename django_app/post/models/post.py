@@ -18,7 +18,7 @@ class Post(models.Model):
         MyGroup,
         on_delete=models.CASCADE,
     )
-    image = models.ImageField()
+    post_image = models.ImageField(upload_to='post')
     video = models.CharField(max_length=120)
     content = models.TextField()
     like_users = models.ManyToManyField(
