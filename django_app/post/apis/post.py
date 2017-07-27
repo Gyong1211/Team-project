@@ -18,7 +18,7 @@ class PostListCreateView(generics.ListCreateAPIView):
         posted_group = self.request.data.get('group')
         if posted_group:
             instance.group = Comment.objects.create(
-                post=instance,
+                instance=instance,
                 author=instance.author,
                 group=posted_group,
             )
