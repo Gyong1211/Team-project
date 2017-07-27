@@ -23,7 +23,7 @@ class MyUserCreationForm(UserCreationForm):
             if commit:
                 user.save()
             return user
-
+            self.get_or_create
 
 class MyUserChangeForm(UserChangeForm):
     password = ReadOnlyPasswordHashField(label="비밀번호")

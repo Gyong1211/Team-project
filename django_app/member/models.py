@@ -85,12 +85,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         if not isinstance(user, MyUser):
             raise ValueError("'user' 는 반드시 MyUser 인자여야 합니다")
         self.following.get_or_create(
-            from_user=user,
+            to_user=user,
         )
 
     def unfollow(self, user):
-        UserRelation.objects.filter(
-            from_user=self,
+        self.following.get(
             to_user=user,
         ).delete()
 
