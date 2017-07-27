@@ -89,8 +89,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         )
 
     def unfollow(self, user):
-        UserRelation.objects.filter(
-            from_user=self,
+        self.following.get(
             to_user=user,
         ).delete()
 
