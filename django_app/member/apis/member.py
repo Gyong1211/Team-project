@@ -16,9 +16,16 @@ class UserListCreateView(generics.ListCreateAPIView):
 
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = MyUser.objects.all()
+    queryset = MyUser.objects
     serializer_class = UserUpdateSerializer
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         ObjectIsRequestUser,
     )
+
+    def get_serializer_class(self):
+        if self.request.method == 'PUT':
+            return UserUpdateSerializer
+        else:
+            return UserSerializer
+

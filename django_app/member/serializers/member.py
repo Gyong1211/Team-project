@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from ..models import MyUser
@@ -16,6 +17,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
+    ori_password = serializers.CharField(
+        write_only=True,
+        style={'input_type': 'password'},
+    )
+    password1 = serializers.CharField(
+        write_only=True,
+        style={'input_type': 'password'},
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        style={'input_type': 'password'},
+    )
+
     class Meta:
         model = MyUser
         fields = (
@@ -27,6 +41,21 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'password1',
             'password2',
         )
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
+        return data
+
+    def update(self, instance, validated_data):
+        if not authenticate(email=instance.email, password=self.validated_data.get('ori_password', instance.password)):
+            raise serializers.ValidationError('기존 비밀번호가 다릅니다.')
+        instance.email = self.validated_data.get('email', instance.email)
+        instance.nickname = self.validated_data.get('nickname', instance.nickname)
+        instance.username = self.validated_data.get('username', instance.username)
+        instance.set_password(self.validated_data.get('password1', instance.password))
+        instance.save()
+        return instance
 
 
 class UserCreationSerializer(serializers.Serializer):
@@ -47,15 +76,15 @@ class UserCreationSerializer(serializers.Serializer):
             raise serializers.ValidationError('이미 존재하는 닉네임입니다.')
         return nickname
 
-    def validate_password(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
-        return data
-
     def validate_email(self, email):
         if MyUser.objects.filter(email=email).exists():
             raise serializers.ValidationError('이미 존재하는 이메일입니다.')
         return email
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
+        return data
 
     def save(self):
         email = self.validated_data.get('email', '')

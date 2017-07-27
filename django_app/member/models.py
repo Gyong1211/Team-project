@@ -88,20 +88,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
             to_user=user,
         )
 
-        UserRelation.objects.get_or_create(
-            from_user=self,
-            to_user=user
-        )
-
-        user.follower.get_or_create(
-            from_user=self
-        )
-
     def unfollow(self, user):
         UserRelation.objects.filter(
             from_user=self,
             to_user=user,
-        )
+        ).delete()
 
     def follow_toggle(self, user):
         relation, relation_created = self.following.get_or_create(to_user=user)
