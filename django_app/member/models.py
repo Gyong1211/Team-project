@@ -4,6 +4,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
+from utils.fields import CustomImageField
+
 
 class MyUserManager(BaseUserManager):
     use_in_migrations = True
@@ -44,6 +46,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('이메일'), unique=True)
     username = models.CharField(_('이름'), max_length=12, blank=True)
     nickname = models.CharField(_('닉네임'), max_length=16, unique=True)
+    profile_img = CustomImageField(
+        upload_to='member',
+        blank=True,
+        default_static_image='images/no_profile.png'
+    )
     is_staff = models.BooleanField(
         _('스태프 권한'),
         default=False,

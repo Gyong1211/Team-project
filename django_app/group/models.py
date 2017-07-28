@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from utils.fields import CustomImageField
+
 
 class MyGroupManager(models.Manager):
     def create(self, **kwargs):
@@ -27,7 +29,11 @@ class MyGroup(models.Model):
         choices=GROUP_TYPE,
         default='PUBLIC',
     )
-    profile_img = models.ImageField(null=True)
+    profile_img = CustomImageField(
+        upload_to='group',
+        blank=True,
+        default_static_image='images/no_image.png'
+    )
     description = models.CharField(max_length=120)
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

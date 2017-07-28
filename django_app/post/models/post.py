@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from group.models import MyGroup
+from utils.fields import CustomImageField
 
 __all__ = (
     'Post',
@@ -18,7 +19,11 @@ class Post(models.Model):
         MyGroup,
         on_delete=models.CASCADE,
     )
-    post_image = models.ImageField(upload_to='post')
+    profile_img = CustomImageField(
+        upload_to='post',
+        blank=True,
+        default_static_image='images/no_image.png'
+    )
     video = models.CharField(max_length=120)
     content = models.TextField()
     like_users = models.ManyToManyField(
