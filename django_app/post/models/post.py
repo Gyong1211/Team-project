@@ -19,12 +19,16 @@ class Post(models.Model):
         MyGroup,
         on_delete=models.CASCADE,
     )
-    profile_img = CustomImageField(
+    image = models.ImageField(
         upload_to='post',
         blank=True,
-        default_static_image='images/no_image.png'
+        null=True,
     )
-    video = models.CharField(max_length=120)
+    video = models.CharField(
+        max_length=120,
+        blank=True,
+        null=True,
+    )
     content = models.TextField()
     like_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
