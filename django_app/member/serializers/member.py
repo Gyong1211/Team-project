@@ -5,6 +5,8 @@ from ..models import MyUser
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile_img_url = serializers.SerializerMethodField()
+
     class Meta:
         model = MyUser
         fields = (
@@ -12,8 +14,11 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'nickname',
             'username',
-            'profile_img',
+            'profile_img_url',
         )
+
+    def get_profile_img_url(self, obj):
+        return obj.profile_img.url
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
