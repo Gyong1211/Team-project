@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'nickname',
             'username',
-            'is_staff'
+            'profile_img',
         )
 
 
@@ -37,6 +37,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'email',
             'nickname',
             'username',
+            'profile_img',
             'ori_password',
             'password1',
             'password2',
@@ -53,6 +54,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         instance.email = self.validated_data.get('email', instance.email)
         instance.nickname = self.validated_data.get('nickname', instance.nickname)
         instance.username = self.validated_data.get('username', instance.username)
+        instance.profile_img = self.validated_data.get('profile_img', instance.profile_img)
         instance.set_password(self.validated_data.get('password1', instance.password))
         instance.save()
         return instance
