@@ -6,6 +6,7 @@ from ..models import MyGroup
 
 
 class GroupSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(many=False)
     members = UserSerializer(many=True)
     tags = TagSerializer(many=True, read_only=True, allow_null=True)
 
@@ -13,6 +14,7 @@ class GroupSerializer(serializers.ModelSerializer):
         model = MyGroup
         fields = (
             'pk',
+            'name',
             'owner',
             'group_type',
             'profile_img',
