@@ -45,4 +45,4 @@ class GroupMemberListView(generics.ListAPIView):
     def get_queryset(self):
         group_pk = self.kwargs['pk']
         group = MyGroup.objects.get(pk=group_pk)
-        return group.members.all()
+        return group.member.all()

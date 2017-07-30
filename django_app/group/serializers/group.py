@@ -29,7 +29,7 @@ class GroupListSerializer(serializers.ModelSerializer):
 class GroupDetailSerializer(serializers.ModelSerializer):
     owner = UserSerializer(many=False)
     profile_img_url = serializers.SerializerMethodField()
-    members = UserSerializer(many=True)
+    member = UserSerializer(many=True)
     tags = TagSerializer(many=True, read_only=True, allow_null=True)
 
     class Meta:
@@ -41,7 +41,7 @@ class GroupDetailSerializer(serializers.ModelSerializer):
             'owner',
             'group_type',
             'description',
-            'members',
+            'member',
             'tags',
         )
 

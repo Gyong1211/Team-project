@@ -19,7 +19,10 @@ class MyGroup(models.Model):
         ('PRIVATE', 'Private'),
         ('HIDDEN', 'Hidden'),
     )
-    name = models.CharField(max_length=24)
+    name = models.CharField(
+        max_length=24,
+        unique=True,
+    )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -35,11 +38,12 @@ class MyGroup(models.Model):
         default_static_image='images/no_image.png'
     )
     description = models.CharField(max_length=120)
-    members = models.ManyToManyField(
+    member = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='Membership',
         related_name='groups_joined',
     )
+    num_of_members = models.PositiveIntegerField(default=1)
     tags = models.ManyToManyField(
         'GroupTag',
     )
@@ -48,8 +52,10 @@ class MyGroup(models.Model):
     def __str__(self):
         return 'Group : {}'.format(self.name)
 
-    def member_count(self):
-        return self.members.count()
+    def calc_num_of_members(self):
+        self.num_of_members = self.member.count()
+        self.save()
+        return self.num_of_members
 
 
 class Membership(models.Model):
