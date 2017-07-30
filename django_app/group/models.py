@@ -6,16 +6,12 @@ from utils.fields import CustomImageField
 
 class MyGroupManager(models.Manager):
     def create(self, **kwargs):
-        tag_list = kwargs.pop('tag', '')
+        tag = kwargs.pop('tag', '')
         obj = self.model(**kwargs)
         self._for_write = True
         obj.save(force_insert=True, using=self.db)
         Membership.objects.get_or_create(user=obj.owner, group=obj)
-        if tag_list:
-            for tag_str in tag_list.split(','):
-                tag = tag_str.strip()
-                group_tag, created = GroupTag.objects.get_or_create(name=tag)
-                obj.tags.add(group_tag)
+        obj.add_tag(tag)
         return obj
 
 
@@ -62,6 +58,25 @@ class MyGroup(models.Model):
         self.num_of_members = self.member.count()
         self.save()
         return self.num_of_members
+
+    def add_tag(self, tag):
+        if isinstance(tag, str):
+            # 입력받은 tag가 string object인 경우
+            for tag_name in tag.split(','):
+                tag_str = tag_name.strip()
+                group_tag, created = GroupTag.objects.get_or_create(name=tag_str)
+                self.tags.add(group_tag)
+        elif isinstance(tag, GroupTag):
+            # 입력받은 tag가 GroupTag instance인 경우
+            self.tags.add(tag)
+        else:
+            raise ValueError
+
+    def remove_tag(self, tag):
+        if not isinstance(tag, GroupTag):
+            raise ValueError
+
+        self.tags.remove(tag)
 
 
 class Membership(models.Model):
