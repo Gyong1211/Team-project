@@ -24,5 +24,13 @@ urlpatterns = [
     # url(r'^api/post/', include('post.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+#api-login-url
+urlpatterns += [
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+]
+
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
