@@ -12,20 +12,19 @@ class GroupListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         keyword_list = self.request.GET.get('search', '')
         if keyword_list:
-            # 멤버 숫자를 Integer 값으로 저장하는 필드 생성 후, 검색 출력 결과를 멤버수로 정렬하도록 .order_by() 추가 필요
             if self.request.user.is_staff:
                 result_queryset = MyGroup.objects.all()
                 for keyword in keyword_list.split():
                     result_queryset = result_queryset.filter(
                         Q(name__contains=keyword) | Q(description__contains=keyword) | Q(tags__name__contains=keyword)
-                    )
+                    ).order_by('-num_of_members')
                 return result_queryset
             else:
                 result_queryset = MyGroup.objects.exclude(group_type="HIDDEN")
                 for keyword in keyword_list.split():
                     result_queryset = result_queryset.filter(
                         Q(name__contains=keyword) | Q(description__contains=keyword) | Q(tags__name__contains=keyword)
-                    )
+                    ).order_by('-num_of_members')
                 return result_queryset
         else:
             if self.request.user.is_staff:

@@ -19,6 +19,7 @@ class GroupListSerializer(serializers.ModelSerializer):
             'owner',
             'group_type',
             'description',
+            'num_of_members',
             'tags',
         )
 
@@ -41,6 +42,7 @@ class GroupDetailSerializer(serializers.ModelSerializer):
             'owner',
             'group_type',
             'description',
+            'num_of_members',
             'member',
             'tags',
         )
