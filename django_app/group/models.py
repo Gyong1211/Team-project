@@ -6,10 +6,16 @@ from utils.fields import CustomImageField
 
 class MyGroupManager(models.Manager):
     def create(self, **kwargs):
+        tag_list = kwargs.pop('tag', '')
         obj = self.model(**kwargs)
         self._for_write = True
         obj.save(force_insert=True, using=self.db)
         Membership.objects.get_or_create(user=obj.owner, group=obj)
+        if tag_list:
+            for tag_str in tag_list.split(','):
+                tag = tag_str.strip()
+                group_tag, created = GroupTag.objects.get_or_create(name=tag)
+                obj.tags.add(group_tag)
         return obj
 
 
