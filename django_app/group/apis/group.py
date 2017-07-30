@@ -2,12 +2,12 @@ from django.db.models import Q
 from rest_framework import generics
 
 from member.serializers import UserSerializer
-from ..serializers import GroupSerializer
+from ..serializers import GroupListSerializer, GroupDetailSerializer
 from ..models import MyGroup
 
 
 class GroupListCreateView(generics.ListCreateAPIView):
-    serializer_class = GroupSerializer
+    serializer_class = GroupListSerializer
 
     def get_queryset(self):
         keyword = self.request.GET.get('search', '')
@@ -29,7 +29,7 @@ class GroupListCreateView(generics.ListCreateAPIView):
 
 class GroupRetrieveView(generics.RetrieveAPIView):
     queryset = MyGroup.objects.all()
-    serializer_class = GroupSerializer
+    serializer_class = GroupDetailSerializer
 
 
 class GroupMemberListView(generics.ListAPIView):

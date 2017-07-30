@@ -5,8 +5,30 @@ from .tag import TagSerializer
 from ..models import MyGroup
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupListSerializer(serializers.ModelSerializer):
     owner = UserSerializer(many=False)
+    profile_img_url = serializers.SerializerMethodField()
+    tags = TagSerializer(many=True, read_only=True, allow_null=True)
+
+    class Meta:
+        model = MyGroup
+        fields = (
+            'pk',
+            'name',
+            'profile_img_url',
+            'owner',
+            'group_type',
+            'description',
+            'tags',
+        )
+
+    def get_profile_img_url(self, obj):
+        return obj.profile_img.url
+
+
+class GroupDetailSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(many=False)
+    profile_img_url = serializers.SerializerMethodField()
     members = UserSerializer(many=True)
     tags = TagSerializer(many=True, read_only=True, allow_null=True)
 
@@ -15,11 +37,13 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = (
             'pk',
             'name',
+            'profile_img_url',
             'owner',
             'group_type',
-            'profile_img',
             'description',
             'members',
             'tags',
         )
 
+    def get_profile_img_url(self, obj):
+        return obj.profile_img.url
