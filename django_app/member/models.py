@@ -107,6 +107,14 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         else:
             return relation
 
+    def is_follow(self, user):
+        # 해당 유저(self)가 입력받은 유저를 follow하고 있는지의 여부를 Boolean 값으로 반환
+        return self.following.filter(to_user=user).exists()
+
+    def is_follower(self, user):
+        # 해당 유저(self)가 입력받은 유저의 follower인지 여부를 Boolean 값으로 반환
+        return self.follower.filter(from_user=user).exists()
+
 
 class UserRelation(models.Model):
     from_user = models.ForeignKey(MyUser, related_name='following')
