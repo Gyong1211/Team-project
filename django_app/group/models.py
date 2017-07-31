@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.query import QuerySet
 
 from utils.fields import CustomImageField
 
@@ -59,18 +60,24 @@ class MyGroup(models.Model):
         self.save()
         return self.num_of_members
 
-    def add_tag(self, tag):
-        if isinstance(tag, str):
+    def add_tag(self, input_tag):
+        if isinstance(input_tag, str):
             # 입력받은 tag가 string object인 경우
-            for tag_name in tag.split(','):
-                tag_str = tag_name.strip()
-                group_tag, created = GroupTag.objects.get_or_create(name=tag_str)
-                self.tags.add(group_tag)
-        elif isinstance(tag, GroupTag):
+            for tag_str in input_tag.split(','):
+                tag_name = tag_str.strip()
+                tag, created = GroupTag.objects.get_or_create(name=tag_name)
+                self.tags.add(tag)
+        elif isinstance(input_tag, GroupTag):
             # 입력받은 tag가 GroupTag instance인 경우
-            self.tags.add(tag)
+            self.tags.add(input_tag)
+        elif isinstance(input_tag, QuerySet):
+            # 입력받은 tag가 QuerySet인 경우
+            for tag in QuerySet:
+                if not isinstance(tag, GroupTag):
+                    raise ValueError('입력된 QuerySet의 항목이 tag instance가 아닙니다.')
+                self.tags.add(tag)
         else:
-            raise ValueError
+            raise ValueError('잘못된 값을 입력했습니다.')
 
     def remove_tag(self, tag):
         if not isinstance(tag, GroupTag):
