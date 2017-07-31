@@ -17,6 +17,7 @@ class GroupListSerializer(serializers.ModelSerializer):
             'pk',
             'name',
             'profile_img_url',
+            'profile_img',
             'owner',
             'group_type',
             'description',
@@ -26,6 +27,9 @@ class GroupListSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'num_of_members',
+        )
+        write_only_fields = (
+            'profile_img',
         )
 
     def get_profile_img_url(self, obj):
