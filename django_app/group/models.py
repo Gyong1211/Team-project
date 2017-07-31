@@ -72,7 +72,7 @@ class MyGroup(models.Model):
             self.tags.add(input_tag)
         elif isinstance(input_tag, QuerySet):
             # 입력받은 tag가 QuerySet인 경우
-            for tag in QuerySet:
+            for tag in input_tag:
                 if not isinstance(tag, GroupTag):
                     raise ValueError('입력된 QuerySet의 항목이 tag instance가 아닙니다.')
                 self.tags.add(tag)
