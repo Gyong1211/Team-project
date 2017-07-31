@@ -2,13 +2,11 @@ from django.db.models import Q
 from rest_framework import generics
 
 from member.serializers import UserSerializer
-from ..serializers import GroupListSerializer, GroupDetailSerializer
+from ..serializers import GroupSerializer, GroupCreateSerializer
 from ..models import MyGroup
 
 
 class GroupListCreateView(generics.ListCreateAPIView):
-    serializer_class = GroupListSerializer
-
     def get_queryset(self):
         keyword_list = self.request.GET.get('search', '')
         if keyword_list:
@@ -32,10 +30,16 @@ class GroupListCreateView(generics.ListCreateAPIView):
             else:
                 return MyGroup.objects.exclude(group_type="HIDDEN")
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return GroupSerializer
+        elif self.request.method == 'POST':
+            return GroupCreateSerializer
+
 
 class GroupRetrieveView(generics.RetrieveAPIView):
     queryset = MyGroup.objects.all()
-    serializer_class = GroupDetailSerializer
+    serializer_class = GroupSerializer
 
 
 class GroupMemberListView(generics.ListAPIView):
