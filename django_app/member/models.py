@@ -64,6 +64,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         ),
     )
     date_joined = models.DateTimeField(_('가입일자'), default=timezone.now)
+    relations = models.ManyToManyField(
+        'self',
+        through='UserRelation',
+        symmetrical=False
+    )
 
     objects = MyUserManager()
 
