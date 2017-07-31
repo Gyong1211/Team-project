@@ -3,7 +3,7 @@ from rest_framework import serializers
 from ..models import Comment
 
 __all__ = (
-    'CommentSerializer'
+    'CommentSerializer',
 )
 
 
