@@ -1,5 +1,7 @@
 from django.conf.urls import url
 
-urlpatterns = [
+from . import apis
 
+urlpatterns = [
+    url(r'^$', apis.PostListCreateView.as_view()),
 ]

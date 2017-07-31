@@ -2,7 +2,7 @@ from rest_framework import generics
 
 from post.models import Comment
 from ..models import Post
-from ..serializers import PostSerializer
+from ..serializers import PostSerializer, PostCreateSerializer
 
 __all__ = (
     'PostListCreateView',
@@ -11,15 +11,10 @@ __all__ = (
 
 class PostListCreateView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer
 
-    def perform_create(self, serializer):
-        instance = serializer.save(author=self.request.user)
-        posted_group = self.request.data.get('group')
-        if posted_group:
-            instance.group = Comment.objects.create(
-                instance=instance,
-                author=instance.author,
-                group=posted_group,
-            )
-            instance.save()
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PostSerializer
+        elif self.request.method == 'POST':
+            return PostCreateSerializer
+

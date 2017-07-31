@@ -35,6 +35,11 @@ class Post(models.Model):
         through='PostLike',
         related_name='like_posts',
     )
+    like_count = models.PositiveIntegerField(default=0)
+
+    def calc_like_count(self):
+        self.like_count = self.like_users.count()
+        self.save()
 
     class Meta:
         ordering = ['-pk']

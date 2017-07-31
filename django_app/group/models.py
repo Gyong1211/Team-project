@@ -112,3 +112,4 @@ class Membership(models.Model):
 
 class GroupTag(models.Model):
     name = models.CharField(max_length=128)
+
