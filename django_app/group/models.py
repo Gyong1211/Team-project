@@ -79,11 +79,18 @@ class MyGroup(models.Model):
         else:
             raise ValueError('잘못된 값을 입력했습니다.')
 
-    def remove_tag(self, tag):
-        if not isinstance(tag, GroupTag):
-            raise ValueError
-
-        self.tags.remove(tag)
+    def remove_tag(self, input_tag):
+        if isinstance(input_tag, GroupTag):
+            # 입력받은 tag가 GroupTag instance인 경우
+            self.tags.remove(input_tag)
+        elif isinstance(input_tag, QuerySet):
+            # 입력받은 tag가 QuerySet인 경우
+            for tag in input_tag:
+                if not isinstance(tag, GroupTag):
+                    raise ValueError('입력된 QuerySet의 항목이 tag instance가 아닙니다.')
+                self.tags.remove(tag)
+        else:
+            raise ValueError('잘못된 값을 입력했습니다.')
 
 
 class Membership(models.Model):
