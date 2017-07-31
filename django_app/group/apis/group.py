@@ -1,8 +1,10 @@
 from django.db.models import Q
-from rest_framework import generics
+from rest_framework import generics, permissions
 
 from member.serializers import UserSerializer
-from ..serializers import GroupSerializer, GroupCreateSerializer
+from post.serializers import PostSerializer
+from utils.permissions import ObjectOwnerIsRequestUser
+from ..serializers import GroupSerializer, GroupCreateSerializer, GroupUpdateSerializer
 from ..models import MyGroup
 
 
@@ -37,9 +39,18 @@ class GroupListCreateView(generics.ListCreateAPIView):
             return GroupCreateSerializer
 
 
-class GroupRetrieveView(generics.RetrieveAPIView):
+class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MyGroup.objects.all()
-    serializer_class = GroupSerializer
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        ObjectOwnerIsRequestUser,
+    )
+
+    def get_serializer_class(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return GroupSerializer
+        else:
+            return GroupUpdateSerializer
 
 
 class GroupMemberListView(generics.ListAPIView):
@@ -49,3 +60,12 @@ class GroupMemberListView(generics.ListAPIView):
         group_pk = self.kwargs['pk']
         group = MyGroup.objects.get(pk=group_pk)
         return group.member.all()
+
+
+class GroupPostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        group_pk = self.kwargs['pk']
+        group = MyGroup.objects.get(pk=group_pk)
+        return group.post_set.all()

@@ -46,3 +46,16 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return MyGroup.objects.create(**validated_data, owner=self.context['request'].user)
+
+
+class GroupUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyGroup
+        fields = (
+            'pk',
+            'name',
+            'profile_img',
+            'group_type',
+            'description',
+            'tags'
+        )
