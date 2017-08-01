@@ -51,21 +51,3 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return GroupSerializer
         else:
             return GroupUpdateSerializer
-
-
-class GroupMemberListView(generics.ListAPIView):
-    serializer_class = UserSerializer
-
-    def get_queryset(self):
-        group_pk = self.kwargs['pk']
-        group = MyGroup.objects.get(pk=group_pk)
-        return group.member.all()
-
-
-class GroupPostListView(generics.ListAPIView):
-    serializer_class = PostSerializer
-
-    def get_queryset(self):
-        group_pk = self.kwargs['pk']
-        group = MyGroup.objects.get(pk=group_pk)
-        return group.post_set.all()
