@@ -47,6 +47,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'password1',
             'password2',
         )
+        read_only_fields = (
+            'pk',
+            'email',
+        )
 
     def validate(self, data):
         if data['password1'] != data['password2']:
@@ -94,14 +98,10 @@ class UserCreationSerializer(serializers.Serializer):
         return data
 
     def save(self):
-        email = self.validated_data.get('email', '')
-        nickname = self.validated_data.get('nickname', '')
-        password = self.validated_data.get('password1', '')
-        username = self.validated_data.get('username', '')
         user = MyUser.objects.create_user(
-            email=email,
-            nickname=nickname,
-            password=password,
-            username=username,
+            email=self.validated_data.get('email', ''),
+            nickname=self.validated_data.get('nickname', ''),
+            password=self.validated_data.get('password1', ''),
+            username=self.validated_data.get('username', ''),
         )
         return user
