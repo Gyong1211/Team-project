@@ -48,4 +48,13 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'video',
         )
 
-# class PostUpdateSerializer(serializers.ModelSerializer):
+class PostUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            'pk',
+            'group',
+            'content',
+            'image',
+            'video',
+        )
