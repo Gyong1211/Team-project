@@ -18,7 +18,9 @@ CONFIG_SECRET_DIR = os.path.join(ROOT_DIR, '.config_secret')
 CONFIG_SECRET_COMMON_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_common.json')
 CONFIG_SECRET_DEBUG_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_debug.json')
 CONFIG_SECRET_DEPLOY_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_deploy.json')
-
+CONFIG_APP_ID = os.path.join(CONFIG_SECRET_DIR, 'settings_facebook.json')
+CONFIG_SECRET_CODE = os.path.join(CONFIG_SECRET_DIR, 'settings_facebook.json')
+config_secret_facebook = json.loads(open(CONFIG_APP_ID).read())
 config_secret_common = json.loads(open(CONFIG_SECRET_COMMON_FILE).read())
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -26,7 +28,8 @@ SECRET_KEY = config_secret_common['django']['secret_key']
 
 # Custom User Model
 AUTH_USER_MODEL = 'member.MyUser'
-
+FACEBOOK_APP_ID = config_secret_facebook['facebook']['app_id']
+FACEBOOK_SECRET_CODE = config_secret_facebook['facebook']['secret_code']
 # Application definition
 
 INSTALLED_APPS = [
@@ -107,3 +110,9 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     STATIC_DIR,
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS':
+    'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
