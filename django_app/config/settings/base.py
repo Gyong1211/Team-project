@@ -43,6 +43,12 @@ INSTALLED_APPS = [
     'post',
     'group',
     'rest_framework',
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -116,3 +122,11 @@ REST_FRAMEWORK = {
     'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
