@@ -5,36 +5,6 @@ from ..models import MyUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile_img_url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = MyUser
-        fields = (
-            'pk',
-            'email',
-            'nickname',
-            'username',
-            'profile_img_url',
-        )
-
-    def get_profile_img_url(self, obj):
-        return obj.profile_img.url
-
-
-class UserUpdateSerializer(serializers.ModelSerializer):
-    ori_password = serializers.CharField(
-        write_only=True,
-        style={'input_type': 'password'},
-    )
-    password1 = serializers.CharField(
-        write_only=True,
-        style={'input_type': 'password'},
-    )
-    password2 = serializers.CharField(
-        write_only=True,
-        style={'input_type': 'password'},
-    )
-
     class Meta:
         model = MyUser
         fields = (
@@ -43,30 +13,82 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'nickname',
             'username',
             'profile_img',
-            'ori_password',
-            'password1',
-            'password2',
+        )
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MyUser
+        exclude = (
+            'is_staff',
+            'is_active',
+            'last_login',
+            'password',
         )
         read_only_fields = (
-            'pk',
-            'email',
+            'date_joined',
         )
 
-    def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
-        return data
 
-    def update(self, instance, validated_data):
-        if not authenticate(email=instance.email, password=self.validated_data.get('ori_password', instance.password)):
-            raise serializers.ValidationError('기존 비밀번호가 다릅니다.')
-        instance.email = self.validated_data.get('email', instance.email)
-        instance.nickname = self.validated_data.get('nickname', instance.nickname)
-        instance.username = self.validated_data.get('username', instance.username)
-        instance.profile_img = self.validated_data.get('profile_img', instance.profile_img)
-        instance.set_password(self.validated_data.get('password1', instance.password))
-        instance.save()
-        return instance
+#
+#
+# class UserUpdateSerializer(serializers.ModelSerializer):
+#     ori_password = serializers.CharField(
+#         write_only=True,
+#         style={'input_type': 'password'},
+#     )
+#     password1 = serializers.CharField(
+#         write_only=True,
+#         style={'input_type': 'password'},
+#     )
+#     password2 = serializers.CharField(
+#         write_only=True,
+#         style={'input_type': 'password'},
+#     )
+#
+#     class Meta:
+#         model = MyUser
+#         fields = (
+#             'pk',
+#             'email',
+#             'nickname',
+#             'username',
+#             'profile_img',
+#             'ori_password',
+#             'password1',
+#             'password2',
+#         )
+#         read_only_fields = (
+#             'pk',
+#             'email',
+#         )
+#
+#     def validate(self, data):
+#         password1 = self.password1.is_valid()
+#         password2 = self.password2.is_valid()
+#         if data['password1'] != data['password2']:
+#             raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
+#     #     return data
+#
+#     def update(self, instance, validated_data):
+#         if not authenticate(email=instance.email, password=validated_data('ori_password')):
+#             raise ValueError('기존 비밀번호가 틀립니다.')
+#         instance.set_password(validated_data('password1'))
+#         instance.save()
+#         return instance
+
+
+    # def update(self, request, validated_data):
+    #     # if not authenticate(email=request.email, password=self.validated_data.get('ori_password', request.password)):
+    #     #     raise serializers.ValidationError('기존 비밀번호가 다릅니다.')
+    #
+    #     email = request.get_email()
+    #     nickname = request.get_nickname()
+    #     username = request.get_username()
+    #     profile_img = request.get_profile_img()
+    #
+    #     return super(UserUpdateSerializer, self).__init__(email, nickname,username, profile_img)
 
 
 class UserCreationSerializer(serializers.Serializer):
