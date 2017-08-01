@@ -40,7 +40,7 @@ class MyGroup(models.Model):
         blank=True,
         default_static_image='images/no_image.png'
     )
-    description = models.CharField(max_length=120)
+    description = models.CharField(max_length=120, blank=True, null=True)
     member = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='Membership',
