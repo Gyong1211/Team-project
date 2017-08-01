@@ -7,7 +7,6 @@ from ..models import MyGroup, GroupTag
 
 class GroupSerializer(serializers.ModelSerializer):
     owner = UserSerializer(many=False, read_only=True)
-    profile_img_url = serializers.SerializerMethodField(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
 
     class Meta:
@@ -15,7 +14,7 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = (
             'pk',
             'name',
-            'profile_img_url',
+            'profile_img',
             'owner',
             'group_type',
             'description',
@@ -25,9 +24,6 @@ class GroupSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'num_of_members',
         )
-
-    def get_profile_img_url(self, obj):
-        return obj.profile_img.url
 
 
 class GroupCreateSerializer(serializers.ModelSerializer):

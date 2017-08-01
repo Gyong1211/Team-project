@@ -1,14 +1,14 @@
+from django.conf import settings
 from django.db.models.fields.files import ImageFieldFile, ImageField
+from django.utils.module_loading import import_string
 
 
 class CustomImageFieldFile(ImageFieldFile):
-    @property
-    def url(self):
-        try:
-            return super().url
-        except ValueError:
-            from django.contrib.staticfiles.storage import staticfiles_storage
-            return staticfiles_storage.url(self.field.static_image_path)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.name and self.field.static_image_path:
+            self.name = self.field.static_image_path
+            self.storage = import_string(settings.STATICFILES_STORAGE)()
 
 
 class CustomImageField(ImageField):
