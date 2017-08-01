@@ -4,4 +4,5 @@ from . import apis
 
 urlpatterns = [
     url(r'^$', apis.PostListCreateView.as_view()),
+    # url(r'^(?P<pk>\d+)/$', apis..as_view()),
 ]

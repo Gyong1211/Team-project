@@ -9,8 +9,7 @@ class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
 
-    post_img_url = serializers.SerializerMethodField(read_only=True)
-    # post_video_url = serializers.SerializerMethodField(read_only=True)
+    # post_img_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Post
@@ -18,8 +17,8 @@ class PostSerializer(serializers.ModelSerializer):
             'pk',
             'author',
             'group',
-            'post_img_url',
-            # 'post_video_url',
+            'image',
+            'video',
             'content',
             'comments',
             'like_users',
@@ -27,17 +26,15 @@ class PostSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'author',
-            'group'
+            # 'group'
         )
 
-    def get_post_img_url(self, obj):
-        if obj.image:
-            return obj.image.url
-        else:
-            return None
+    # def get_post_img_url(self, obj):
+    #     if obj.image:
+    #         return obj.image.url
+    #     else:
+    #         return None
 
-    # def get_post_video_url(self, obj):
-    #     return obj.video.url
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
@@ -51,5 +48,4 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'video',
         )
 
-    def create(self, validated_data):
-        return Post.objects.create(**validated_data, author=self.context['request'].user)
+# class PostUpdateSerializer(serializers.ModelSerializer):
