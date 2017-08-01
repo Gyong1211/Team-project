@@ -32,20 +32,22 @@ class GroupSerializer(serializers.ModelSerializer):
 
 class GroupCreateSerializer(serializers.ModelSerializer):
     tag = serializers.CharField(max_length=255, write_only=True, allow_blank=True)
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = MyGroup
         fields = (
             'pk',
+            'owner',
             'name',
             'profile_img',
             'group_type',
             'description',
             'tag'
         )
-
-    def create(self, validated_data):
-        return MyGroup.objects.create(**validated_data, owner=self.context['request'].user)
+        read_only_fields = (
+            'owner',
+        )
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):

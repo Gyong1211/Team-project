@@ -38,6 +38,9 @@ class GroupListCreateView(generics.ListCreateAPIView):
         elif self.request.method == 'POST':
             return GroupCreateSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
 
 class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MyGroup.objects.all()
