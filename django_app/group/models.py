@@ -40,7 +40,7 @@ class MyGroup(models.Model):
         blank=True,
         default_static_image='images/no_image.png'
     )
-    description = models.CharField(max_length=120)
+    description = models.CharField(max_length=120, blank=True, null=True)
     member = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='Membership',
@@ -111,5 +111,9 @@ class Membership(models.Model):
 
 
 class GroupTag(models.Model):
-    name = models.CharField(max_length=128)
+
+    name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return self.name
 
