@@ -1,15 +1,9 @@
 from rest_framework import parsers, renderers
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from config.settings import AUTH_USER_MODEL
 from ..serializers import LoginSerializer
-
-
-
-User = AUTH_USER_MODEL
 
 __all__ = (
     'AuthTokenView',
@@ -19,8 +13,8 @@ __all__ = (
 class AuthTokenView(APIView):
     throttle_classes = ()
     permissions_classes = ()
-    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser)
-    renderer_classes = (renderers.JSONRenderer)
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer,)
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):

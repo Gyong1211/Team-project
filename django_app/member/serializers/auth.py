@@ -1,8 +1,6 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-from member.models import MyUser
-
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(
@@ -21,9 +19,9 @@ class LoginSerializer(serializers.Serializer):
 
             if not user.is_active:
                 message = '비활성 계정입니다'
-                raise serializers.ValidationError(message, code='authorization')
+                raise serializers.ValidationError(message)
         else:
-            message ='email과 password 가 존재하지 않습니다'
-            raise serializers.ValidationError(message, code='authorization')
+            message = 'email과 password 가 존재하지 않습니다'
+            raise serializers.ValidationError(message)
         attrs['user'] = user
         return attrs
