@@ -7,5 +7,6 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupTag
         fields = (
+            'pk',
             'name',
         )

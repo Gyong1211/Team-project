@@ -2,7 +2,7 @@ from rest_framework import serializers, request
 
 from member.serializers import UserSerializer
 from .tag import TagSerializer
-from ..models import MyGroup
+from ..models import MyGroup, GroupTag
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -51,6 +51,13 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True,read_only=True)
+    tag_names = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        write_only=True
+    )
+
     class Meta:
         model = MyGroup
         fields = (
@@ -59,5 +66,16 @@ class GroupUpdateSerializer(serializers.ModelSerializer):
             'profile_img',
             'group_type',
             'description',
-            'tags'
+            'tags',
+            'tag_names',
         )
+
+    def update(self, instance, validated_data):
+        tags_data = validated_data.pop('tag_names', [])
+        updated_instance = super().update(instance, validated_data)
+        updated_instance.tags.clear()
+        if tags_data:
+            for tag_data in tags_data:
+                tag, created = GroupTag.objects.get_or_create(name=tag_data)
+                updated_instance.tags.add(tag)
+        return updated_instance

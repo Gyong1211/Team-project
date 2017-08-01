@@ -13,7 +13,7 @@ class GroupListCreateView(generics.ListCreateAPIView):
         if self.request.user.is_staff:
             return MyGroup.objects.all()
         else:
-            return MyGroup.objects.exclued(group_type="HIDDEN")
+            return MyGroup.objects.exclude(group_type="HIDDEN")
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -37,3 +37,4 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return GroupSerializer
         else:
             return GroupUpdateSerializer
+
