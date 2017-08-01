@@ -67,11 +67,11 @@ class GroupUpdateSerializer(serializers.ModelSerializer):
         )
 
     def update(self, instance, validated_data):
-        tags_data = validated_data.pop('tag_names', [])
+        tag_name_list = validated_data.get('tag_names')
         updated_instance = super().update(instance, validated_data)
-        updated_instance.tags.clear()
-        if tags_data:
-            for tag_data in tags_data:
-                tag, created = GroupTag.objects.get_or_create(name=tag_data)
+        if tag_name_list and isinstance(tag_name_list, list):
+            updated_instance.tags.clear()
+            for tag_name in tag_name_list:
+                tag, created = GroupTag.objects.get_or_create(name=tag_name)
                 updated_instance.tags.add(tag)
         return updated_instance
