@@ -73,5 +73,5 @@ class GroupUpdateSerializer(serializers.ModelSerializer):
             updated_instance.tags.clear()
             for tag_name in tag_name_list:
                 tag, created = GroupTag.objects.get_or_create(name=tag_name)
-                updated_instance.tags.add(tag)
+                updated_instance.add_tag(tag)
         return updated_instance
