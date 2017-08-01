@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from member.serializers import UserUpdateSerializer
 from ..models import MyUser
-from ..serializers import UserSerializer, UserCreationSerializer
+from ..serializers import UserSerializer
 
 
 class UserListCreateView(generics.ListCreateAPIView):
@@ -16,7 +16,7 @@ class UserListCreateView(generics.ListCreateAPIView):
         if self.request.method == 'GET':
             return UserSerializer
         elif self.request.method == 'POST':
-            return UserCreationSerializer
+            return UserSerializer
 
 #
 # class UserProfileView(APIView):
