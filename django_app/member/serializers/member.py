@@ -1,4 +1,3 @@
-from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from ..models import MyUser
@@ -6,7 +5,9 @@ from ..models import MyUser
 __all__ = (
     'UserSerializer',
     'UserUpdateSerializer',
+    'UserCreateSerializer',
 )
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,8 +20,67 @@ class UserSerializer(serializers.ModelSerializer):
             'profile_img',
         )
 
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        instance = self.Meta.model(**validated_data)
+        if password is not None:
+            instance.set_password(password)
+        instance.save()
+        return instance
+
+
+class UserCreateSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=125)
+    nickname = serializers.CharField(max_length=16)
+    password1 = serializers.CharField(max_length=24, write_only=True)
+    password2 = serializers.CharField(max_length=24, write_only=True)
+
+    def validate_email(self, email):
+        if MyUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError('존재하는 email 입니다')
+        return email
+
+    def validate_nickname(self, nickname):
+        if MyUser.objects.filter(nickname=nickname).exists():
+            raise serializers.ValidationError('존재하는 nickname 입니다')
+        return nickname
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError('password가 일치하지 않습니다')
+        return data
+
+    def save(self, *args, **kwargs):
+        email = self.validated_data.get('email', '')
+        password = self.validated_data.get('password1', '')
+        nickname = self.validated_data.get('nickname', '')
+        user = MyUser.objects.create_user(
+            email=email,
+            password=password,
+            nickname=nickname,
+        )
+        return user
+
 
 class UserUpdateSerializer(serializers.ModelSerializer):
+    password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+
+    def validate_nickname(self, nickname):
+        if MyUser.objects.filter(nickname=nickname).exists():
+            raise serializers.ValidationError('이미 존재하는 nickname입니다')
+        return nickname
+
+    def validate_username(self, username):
+        if MyUser.objects.filter(username=username).exists():
+            raise serializers.ValidationError('이미 존재하는 username입니다')
+
+    def validate(self, data):
+        if data.get('password1'):
+            if data['password1'] != data['password2']:
+                raise serializers.ValidationError('password 가 일치하지 않습니다')
+
+        return data
 
     class Meta:
         model = MyUser
@@ -28,106 +88,7 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'is_staff',
             'is_active',
             'last_login',
-            'password',
         )
         read_only_fields = (
             'date_joined',
         )
-
-
-#
-#
-# class UserUpdateSerializer(serializers.ModelSerializer):
-#     ori_password = serializers.CharField(
-#         write_only=True,
-#         style={'input_type': 'password'},
-#     )
-#     password1 = serializers.CharField(
-#         write_only=True,
-#         style={'input_type': 'password'},
-#     )
-#     password2 = serializers.CharField(
-#         write_only=True,
-#         style={'input_type': 'password'},
-#     )
-#
-#     class Meta:
-#         model = MyUser
-#         fields = (
-#             'pk',
-#             'email',
-#             'nickname',
-#             'username',
-#             'profile_img',
-#             'ori_password',
-#             'password1',
-#             'password2',
-#         )
-#         read_only_fields = (
-#             'pk',
-#             'email',
-#         )
-#
-#     def validate(self, data):
-#         password1 = self.password1.is_valid()
-#         password2 = self.password2.is_valid()
-#         if data['password1'] != data['password2']:
-#             raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
-#     #     return data
-#
-#     def update(self, instance, validated_data):
-#         if not authenticate(email=instance.email, password=validated_data('ori_password')):
-#             raise ValueError('기존 비밀번호가 틀립니다.')
-#         instance.set_password(validated_data('password1'))
-#         instance.save()
-#         return instance
-
-
-    # def update(self, request, validated_data):
-    #     # if not authenticate(email=request.email, password=self.validated_data.get('ori_password', request.password)):
-    #     #     raise serializers.ValidationError('기존 비밀번호가 다릅니다.')
-    #
-    #     email = request.get_email()
-    #     nickname = request.get_nickname()
-    #     username = request.get_username()
-    #     profile_img = request.get_profile_img()
-    #
-    #     return super(UserUpdateSerializer, self).__init__(email, nickname,username, profile_img)
-
-#
-# class UserCreationSerializer(serializers.Serializer):
-#     email = serializers.EmailField(
-#         max_length=255
-#     )
-#     nickname = serializers.CharField(
-#         max_length=16,
-#     )
-#     username = serializers.CharField(
-#         max_length=12,
-#     )
-#     password1 = serializers.CharField(write_only=True)
-#     password2 = serializers.CharField(write_only=True)
-#
-#     def validate_nickname(self, nickname):
-#         if MyUser.objects.filter(nickname=nickname).exists():
-#             raise serializers.ValidationError('이미 존재하는 닉네임입니다.')
-#         return nickname
-#
-#     def validate_email(self, email):
-#         if MyUser.objects.filter(email=email).exists():
-#             raise serializers.ValidationError('이미 존재하는 이메일입니다.')
-#         return email
-#
-#     def validate(self, data):
-#         if data['password1'] != data['password2']:
-#             raise serializers.ValidationError('비밀번호가 다르게 입력되었습니다.')
-#         return data
-#
-#     def save(self):
-#         user = MyUser.objects.create_user(
-#             email=self.validated_data.get('email', ''),
-#             nickname=self.validated_data.get('nickname', ''),
-#             password=self.validated_data.get('password1', ''),
-#             username=self.validated_data.get('username', ''),
-#         )
-#         return user
