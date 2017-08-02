@@ -1,6 +1,6 @@
 from rest_framework import generics, permissions
 
-from utils.permissions import ObjectIsRequestUser
+from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Post
 from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer
 
@@ -51,10 +51,13 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        ObjectIsRequestUser,
+        ObjectAuthorIsRequestUser,
     )
-    def get_serializer_class(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return PostUpdateSerializer
-        else:
-            return PostUpdateSerializer
+    serializer_class = PostUpdateSerializer
+    # def get_serializer_class(self):
+    #     if self.request.method in permissions.SAFE_METHODS:
+    #         return PostUpdateSerializer
+    #     else:
+    #         return PostUpdateSerializer
+
+
