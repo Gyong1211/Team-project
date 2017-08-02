@@ -27,7 +27,12 @@ class GroupSerializer(serializers.ModelSerializer):
 
 
 class GroupCreateSerializer(serializers.ModelSerializer):
-    tag = serializers.CharField(max_length=255, write_only=True, allow_blank=True)
+    tags = TagSerializer(many=True, read_only=True)
+    tag_names = serializers.ListField(
+        child=serializers.CharField(),
+        required=False,
+        write_only=True
+    )
     owner = UserSerializer(read_only=True)
 
     class Meta:
@@ -39,11 +44,20 @@ class GroupCreateSerializer(serializers.ModelSerializer):
             'profile_img',
             'group_type',
             'description',
-            'tag'
+            'tags',
+            'tag_names'
         )
         read_only_fields = (
             'owner',
         )
+
+    def create(self, validated_data):
+        tag_name_list = validated_data.pop('tag_names', '')
+        group = MyGroup.objects.create(**validated_data)
+        for tag_name in tag_name_list:
+            tag, created = GroupTag.objects.get_or_create(name=tag_name)
+            group.add_tag(tag)
+        return group
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):

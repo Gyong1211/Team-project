@@ -7,12 +7,10 @@ from utils.fields import CustomImageField
 
 class MyGroupManager(models.Manager):
     def create(self, **kwargs):
-        tag = kwargs.pop('tag', '')
         obj = self.model(**kwargs)
         self._for_write = True
         obj.save(force_insert=True, using=self.db)
         Membership.objects.get_or_create(user=obj.owner, group=obj)
-        obj.add_tag(tag)
         return obj
 
 

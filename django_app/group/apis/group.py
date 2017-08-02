@@ -1,17 +1,30 @@
+from django.db.models import Q
 from rest_framework import generics, permissions, filters
 
 from utils.permissions import ObjectOwnerIsRequestUser
 from ..serializers import GroupSerializer, GroupCreateSerializer, GroupUpdateSerializer
 from ..models import MyGroup
 
+__all__ = (
+    'GroupListCreateView',
+    'GroupRetrieveUpdateDestroyView',
+)
+
 
 class GroupListCreateView(generics.ListCreateAPIView):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name', 'description', 'tags__name')
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return MyGroup.objects.all()
+        if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                return MyGroup.objects.all()
+            else:
+                return MyGroup.objects.exclude(group_type="HIDDEN") | \
+                       MyGroup.objects.filter(Q(group_type="HIDDEN") & Q(member=self.request.user))
         else:
             return MyGroup.objects.exclude(group_type="HIDDEN")
 
@@ -37,4 +50,3 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return GroupSerializer
         else:
             return GroupUpdateSerializer
-
