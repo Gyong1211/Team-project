@@ -18,9 +18,6 @@ CONFIG_SECRET_DIR = os.path.join(ROOT_DIR, '.config_secret')
 CONFIG_SECRET_COMMON_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_common.json')
 CONFIG_SECRET_DEBUG_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_debug.json')
 CONFIG_SECRET_DEPLOY_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_deploy.json')
-CONFIG_APP_ID = os.path.join(CONFIG_SECRET_DIR, 'settings_facebook.json')
-CONFIG_SECRET_CODE = os.path.join(CONFIG_SECRET_DIR, 'settings_facebook.json')
-config_secret_facebook = json.loads(open(CONFIG_APP_ID).read())
 config_secret_common = json.loads(open(CONFIG_SECRET_COMMON_FILE).read())
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -28,8 +25,6 @@ SECRET_KEY = config_secret_common['django']['secret_key']
 
 # Custom User Model
 AUTH_USER_MODEL = 'member.MyUser'
-FACEBOOK_APP_ID = config_secret_facebook['facebook']['app_id']
-FACEBOOK_SECRET_CODE = config_secret_facebook['facebook']['secret_code']
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,12 +40,6 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'rest_framework.authtoken',
-
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
@@ -121,15 +110,6 @@ STATICFILES_DIRS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     )
 }
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
-SITE_ID = 2
-SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
