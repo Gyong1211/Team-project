@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 from utils.fields import CustomImageField
 
@@ -113,3 +115,9 @@ class GroupTag(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=Membership)
+@receiver(post_delete, sender=Membership)
+def update_num_of_members(sender, instance, **kwargs):
+    instance.group.calc_num_of_members()
