@@ -4,6 +4,11 @@ from utils.permissions import ObjectOwnerIsRequestUser
 from ..serializers import GroupSerializer, GroupCreateSerializer, GroupUpdateSerializer
 from ..models import MyGroup
 
+__all__ = (
+    'GroupListCreateView',
+    'GroupRetrieveUpdateDestroyView',
+)
+
 
 class GroupListCreateView(generics.ListCreateAPIView):
     filter_backends = (filters.SearchFilter,)
