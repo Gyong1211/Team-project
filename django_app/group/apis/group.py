@@ -2,12 +2,13 @@ from django.db.models import Q
 from rest_framework import generics, permissions, filters
 
 from utils.permissions import ObjectOwnerIsRequestUser
-from ..serializers import GroupSerializer, GroupCreateSerializer, GroupUpdateSerializer
+from ..serializers import *
 from ..models import MyGroup
 
 __all__ = (
     'GroupListCreateView',
     'GroupRetrieveUpdateDestroyView',
+    'GroupOwnerUpdateView',
 )
 
 
@@ -50,3 +51,12 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return GroupSerializer
         else:
             return GroupUpdateSerializer
+
+
+class GroupOwnerUpdateView(generics.UpdateAPIView):
+    queryset = MyGroup.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+        ObjectOwnerIsRequestUser,
+    )
+    serializer_class = GroupOwnerUpdateSerializer

@@ -1,8 +1,16 @@
 from rest_framework import serializers, request
 
+from member.models import MyUser
 from member.serializers import UserSerializer
 from .tag import TagSerializer
 from ..models import MyGroup, GroupTag
+
+__all__ = (
+    'GroupSerializer',
+    'GroupCreateSerializer',
+    'GroupUpdateSerializer',
+    'GroupOwnerUpdateSerializer',
+)
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -61,7 +69,7 @@ class GroupCreateSerializer(serializers.ModelSerializer):
 
 
 class GroupUpdateSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True,read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
     tag_names = serializers.ListField(
         child=serializers.CharField(),
         required=False,
@@ -88,4 +96,46 @@ class GroupUpdateSerializer(serializers.ModelSerializer):
             for tag_name in tag_name_list:
                 tag, created = GroupTag.objects.get_or_create(name=tag_name)
                 updated_instance.add_tag(tag)
+        return updated_instance
+
+
+class GroupOwnerUpdateSerializer(serializers.ModelSerializer):
+    owner = UserSerializer(many=False, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)
+    new_owner_nickname = serializers.CharField(max_length=255, required=True, write_only=True)
+
+    class Meta:
+        model = MyGroup
+        fields = (
+            'pk',
+            'name',
+            'owner',
+            'profile_img',
+            'group_type',
+            'description',
+            'tags',
+            'nickname',
+
+        )
+        read_only_fields = (
+            'name',
+            'profile_img',
+            'group_type',
+            'description',
+            'tags',
+        )
+
+    def validate_new_owner_nickname(self, new_owner_nickname):
+        if MyUser.objects.filter(nickname=new_owner_nickname).exists():
+            if self.instance.member.filter(nickname=new_owner_nickname).exists():
+                return self.instance.member.get(nickname=new_owner_nickname)
+            else:
+                raise serializers.ValidationError('해당 유저는 그룹의 멤버가 아닙니다.')
+        else:
+            raise serializers.ValidationError('해당 닉네임을 가진 유저가 없습니다.')
+
+    def update(self, instance, validated_data):
+        new_owner = validated_data.get('new_owner_nickname')
+        validated_data['owner'] = new_owner
+        updated_instance = super().update(instance, validated_data)
         return updated_instance
