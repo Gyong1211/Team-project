@@ -1,14 +1,11 @@
 from django.contrib.auth import authenticate
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 
 
-class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(
-        max_length=125
-    )
-    password = serializers.CharField(
-        write_only=True
-    )
+class AuthTokenSerializer(serializers.Serializer):
+    email = serializers.CharField(label=_("email"))
+    password = serializers.CharField(label=_("Password"), style={'input_type': 'password'})
 
     def validate(self, attrs):
         email = attrs.get('email')
@@ -17,11 +14,16 @@ class LoginSerializer(serializers.Serializer):
         if email and password:
             user = authenticate(email=email, password=password)
 
-            if not user.is_active:
-                message = '비활성 계정입니다'
-                raise serializers.ValidationError(message)
+            if user:
+                if not user.is_active:
+                    msg = '유저의 계정이 비활성화 상태입니다'
+                    raise serializers.ValidationError(msg)
+            else:
+                msg = 'email, password가 일치하지 않습니다'
+                raise serializers.ValidationError(msg)
         else:
-            message = 'email과 password 가 존재하지 않습니다'
-            raise serializers.ValidationError(message)
+            msg = '유저가 존재하지 않습니다'
+            raise serializers.ValidationError(msg)
+
         attrs['user'] = user
         return attrs
