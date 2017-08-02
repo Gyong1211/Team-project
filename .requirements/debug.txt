@@ -8,6 +8,7 @@ colorama==0.3.7
 decorator==4.1.1
 Django==1.11.3
 django-extensions==1.8.1
+django-filter==1.0.4
 django-storages==1.6.3
 djangorestframework==3.6.3
 docker-py==1.7.2

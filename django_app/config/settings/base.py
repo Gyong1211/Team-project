@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'post',
     'group',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -107,3 +108,8 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     STATIC_DIR,
 ]
+
+# DRF settings
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
