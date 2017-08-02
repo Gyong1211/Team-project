@@ -114,7 +114,7 @@ class GroupOwnerUpdateSerializer(serializers.ModelSerializer):
             'group_type',
             'description',
             'tags',
-            'nickname',
+            'new_owner_nickname',
 
         )
         read_only_fields = (
