@@ -10,6 +10,7 @@ class MyGroupManager(models.Manager):
         obj = self.model(**kwargs)
         self._for_write = True
         obj.save(force_insert=True, using=self.db)
+        from member.models import Membership
         Membership.objects.get_or_create(user=obj.owner, group=obj)
         return obj
 
@@ -39,11 +40,6 @@ class MyGroup(models.Model):
         default_static_image='images/no_image.png'
     )
     description = models.CharField(max_length=120, blank=True, null=True)
-    member = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        through='Membership',
-        related_name='groups_joined',
-    )
     num_of_members = models.PositiveIntegerField(default=1)
     tags = models.ManyToManyField(
         'GroupTag',
@@ -89,23 +85,6 @@ class MyGroup(models.Model):
                 self.tags.remove(tag)
         else:
             raise ValueError('잘못된 값을 입력했습니다.')
-
-
-class Membership(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE
-    )
-    group = models.ForeignKey(
-        MyGroup,
-        on_delete=models.CASCADE
-    )
-    joined_date = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = (
-            ('user', 'group')
-        )
 
 
 class GroupTag(models.Model):

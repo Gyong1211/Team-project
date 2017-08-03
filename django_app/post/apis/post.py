@@ -48,7 +48,7 @@ class PostSearchListView(generics.ListAPIView):
 
     serializer_class = PostSerializer
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('author', 'group',)
+    filter_fields = ('author', 'group__name',)
 
 
 # 개인 포스트 페이지에서 보여질 리스트 및 생성 뷰 (내가 작성한 글만 보여줌)

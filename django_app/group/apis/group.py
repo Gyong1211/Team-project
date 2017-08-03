@@ -1,20 +1,24 @@
 from django.db.models import Q
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, filters
 
-from utils.permissions import ObjectOwnerIsRequestUser
-from ..serializers import GroupSerializer, GroupCreateSerializer, GroupUpdateSerializer
+from utils.permissions import ObjectOwnerIsRequestUser, ObjectOwnerIsRequestUserOrReadOnly
+from ..serializers import *
 from ..models import MyGroup
 
 __all__ = (
     'GroupListCreateView',
     'GroupRetrieveUpdateDestroyView',
+    'GroupOwnerUpdateView',
 )
 
 
 class GroupListCreateView(generics.ListCreateAPIView):
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name', 'description', 'tags__name')
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
+    search_fields = ('name', 'description', 'tags__name')  # 그룹의 name, description, 그룹이 가진 tag의 name으로 리스트 검색
+    filter_fields = ('member',)  # member의 pk로 해당 유저가 가입한 그룹 목록 필터링
     permission_classes = (
+        permissions.IsAuthenticated,
         permissions.IsAuthenticatedOrReadOnly,
     )
 
@@ -41,8 +45,7 @@ class GroupListCreateView(generics.ListCreateAPIView):
 class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MyGroup.objects.all()
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-        ObjectOwnerIsRequestUser,
+        ObjectOwnerIsRequestUserOrReadOnly,
     )
 
     def get_serializer_class(self):
@@ -50,3 +53,11 @@ class GroupRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return GroupSerializer
         else:
             return GroupUpdateSerializer
+
+
+class GroupOwnerUpdateView(generics.UpdateAPIView):
+    queryset = MyGroup.objects.all()
+    permission_classes = (
+        ObjectOwnerIsRequestUser,
+    )
+    serializer_class = GroupOwnerUpdateSerializer
