@@ -13,3 +13,6 @@ class Comment(models.Model):
     user = models.ForeignKey(MyUser)
     content = models.CharField(max_length=150)
     created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content
