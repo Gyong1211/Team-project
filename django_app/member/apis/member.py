@@ -24,6 +24,8 @@ class UserUpdateView(generics.RetrieveUpdateDestroyAPIView):
         ObjectIsRequestUser,
     )
 
-    def get_serializer_class(self):
-        if self.request.method == 'PATCH':
-            return UserUpdateSerializer
+    # def get_serializer_class(self):
+    #     if self.request.method == 'PATCH':
+    #         return UserUpdateSerializer
+    #     if self.request.method == 'DELETE':
+    #         return UserUpdateSerializer
