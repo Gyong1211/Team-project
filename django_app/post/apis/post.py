@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, filters
 from rest_framework.filters import DjangoFilterBackend
 
 from utils.permissions import ObjectAuthorIsRequestUser
@@ -10,7 +10,7 @@ __all__ = (
     'PostListCreateView',
     'MyPostListCreateView',
     'PostRetrieveUpdateDestroyView',
-    'PostSearchListView'
+    'PostConditionalListView'
 
 )
 
@@ -26,16 +26,17 @@ class PostListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             user = self.request.user
-            return Post.objects.filter(group__in=user.groups_joined.all())
+            return Post.objects.filter(group__in=user.group.all())
         else:
-            return Post.objects.all()
-        return Post.objects.all()
+            return Post.objects.exclude(group__group_type="HIDDEN")
+
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+        ##그룹도 현재 속한 그룹으로 진행 되도록 만들어야한다.
 
 
-class PostSearchListView(generics.ListAPIView):
+class PostConditionalListView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_staff:
@@ -47,8 +48,9 @@ class PostSearchListView(generics.ListAPIView):
             return Post.objects.exclude(group__group_type="HIDDEN")
 
     serializer_class = PostSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('author', 'group__name',)
+    filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
+    filter_fields = ('author', 'group',)
+    search_fields = ('content', 'group__name', 'group__description', 'group__tags__name')
 
 
 # 개인 포스트 페이지에서 보여질 리스트 및 생성 뷰 (내가 작성한 글만 보여줌)

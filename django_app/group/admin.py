@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import MyGroup, GroupTag, Membership
+from .models import MyGroup, GroupTag
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -17,8 +17,4 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(GroupTag, TagAdmin)
 
 
-class MembershipAdmin(admin.ModelAdmin):
-    pass
 
-
-admin.site.register(Membership, MembershipAdmin)
