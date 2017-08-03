@@ -10,4 +10,7 @@ urlpatterns = [
     url(r'^logout/', apis.LogoutView.as_view()),
     url(r'^$', apis.UserListCreateView.as_view()),
 
+    # url(r'^membership/$', apis.MembershipCreateDestroyView.as_view()),
+    url(r'^membership/(?P<group_pk>\d+)/$', apis.MembershipCreateDestroyView.as_view()),
+
 ]
