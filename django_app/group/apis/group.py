@@ -15,8 +15,8 @@ __all__ = (
 
 class GroupListCreateView(generics.ListCreateAPIView):
     filter_backends = (filters.SearchFilter, DjangoFilterBackend,)
-    search_fields = ('name', 'description', 'tags__name')
-    filter_fields = ('member', 'member__nickname') # member의 pk나 member의 nickname으로 가입한 그룹의 리스트를 출력할 수 있다.
+    search_fields = ('name', 'description', 'tags__name')  # 그룹의 name, description, 그룹이 가진 tag의 name으로 리스트 검색
+    filter_fields = ('member',)  # member의 pk로 해당 유저가 가입한 그룹 목록 필터링
     permission_classes = (
         permissions.IsAuthenticated,
         permissions.IsAuthenticatedOrReadOnly,
