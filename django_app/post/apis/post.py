@@ -35,7 +35,7 @@ class PostListCreateView(generics.ListCreateAPIView):
         serializer.save(author=self.request.user)
         ##그룹도 현재 속한 그룹으로 진행 되도록 만들어야한다.
 
-
+## post 리스트를 조회할 때 사용 (또한, 특정 그룹 및 특정 유저가 작성한 post를 볼때도 사용)
 class PostConditionalListView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
