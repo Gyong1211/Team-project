@@ -1,9 +1,13 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, AbstractUser
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.authtoken.models import Token
 
+from config.settings import AUTH_USER_MODEL
 from utils.fields import CustomImageField
 
 
@@ -119,6 +123,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     def is_follower(self, user):
         # 해당 유저(self)가 입력받은 유저의 follower인지 여부를 Boolean 값으로 반환
         return self.follower.filter(from_user=user).exists()
+
+    # @receiver(post_save, sender=AUTH_USER_MODEL)
+    # def create_auth_token(sender, instance=None, created=False, **kwargs):
+    #     if created:
+    #         Token.objects.create(user=instance)
 
 
 class UserRelation(models.Model):
