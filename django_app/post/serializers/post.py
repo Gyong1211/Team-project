@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from group.models import MyGroup
+from group.serializers import GroupSerializer
 from member.serializers import UserSerializer
 from post.models import Post
 from post.serializers.comment import CommentSerializer
@@ -41,6 +43,12 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'video',
         )
 
+    def validate(self, data):
+        user = self.context['request'].user
+        joined_group = MyGroup.objects.filter(member=user)
+        if data['group'] not in joined_group:
+            raise serializers.ValidationError('속한 그룹이 아닙니다.')
+        return data
 
 
 

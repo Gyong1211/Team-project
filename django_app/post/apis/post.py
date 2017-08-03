@@ -1,10 +1,9 @@
 from django.db.models import Q
 from rest_framework import generics, permissions, filters
-from rest_framework.filters import DjangoFilterBackend
 
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Post
-from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer
+from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer, MyGroup
 
 __all__ = (
     'PostListCreateView',
@@ -30,10 +29,10 @@ class PostListCreateView(generics.ListCreateAPIView):
         else:
             return Post.objects.exclude(group__group_type="HIDDEN")
 
-
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
         ##그룹도 현재 속한 그룹으로 진행 되도록 만들어야한다.
+
 
 ## post list 조회할 때 사용 (또한, 특정 그룹 및 특정 유저가 작성한 post를 볼때도 사용)
 class PostListView(generics.ListAPIView):
