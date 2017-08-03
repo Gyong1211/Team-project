@@ -1,13 +1,14 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, AbstractUser
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.authtoken.models import Token
 
 from config.settings import AUTH_USER_MODEL
+from group.models import MyGroup
 from utils.fields import CustomImageField
 
 
@@ -72,6 +73,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         'self',
         through='UserRelation',
         symmetrical=False
+    )
+    group = models.ManyToManyField(
+        MyGroup,
+        through='Membership',
+        related_name='member',
     )
 
     objects = MyUserManager()
@@ -145,3 +151,26 @@ class UserRelation(models.Model):
         unique_together = (
             ('from_user', 'to_user'),
         )
+
+
+class Membership(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE
+    )
+    group = models.ForeignKey(
+        MyGroup,
+        on_delete=models.CASCADE
+    )
+    joined_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (
+            ('user', 'group')
+        )
+
+
+@receiver(post_save, sender=Membership)
+@receiver(post_delete, sender=Membership)
+def update_num_of_members(sender, instance, **kwargs):
+    instance.group.calc_num_of_members()

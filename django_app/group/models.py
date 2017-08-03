@@ -10,7 +10,8 @@ class MyGroupManager(models.Manager):
         obj = self.model(**kwargs)
         self._for_write = True
         obj.save(force_insert=True, using=self.db)
-        # Membership.objects.get_or_create(user=obj.owner, group=obj)
+        from member.models import Membership
+        Membership.objects.get_or_create(user=obj.owner, group=obj)
         return obj
 
 
