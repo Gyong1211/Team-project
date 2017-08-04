@@ -1,10 +1,10 @@
+from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from rest_framework import parsers, renderers, status
+from rest_framework import parsers, renderers
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.contrib.auth import logout
 
 from member.models import MyUser
 from ..serializers import AuthTokenSerializer
