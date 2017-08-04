@@ -10,8 +10,7 @@ from post.serializers.comment import CommentSerializer
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     comments = CommentSerializer(many=True, read_only=True)
-
-    # post_img_url = serializers.SerializerMethodField(read_only=True)
+    group = GroupSerializer(read_only=True)
 
     class Meta:
         model = Post
@@ -33,6 +32,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Post
         fields = (
@@ -51,15 +51,13 @@ class PostCreateSerializer(serializers.ModelSerializer):
         return data
 
 
-
 class PostUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
             'pk',
-            'author',
-            'content',
             'group',
+            'content',
             'image',
             'video',
         )
