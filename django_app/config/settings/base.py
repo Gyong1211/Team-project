@@ -18,6 +18,7 @@ CONFIG_SECRET_DIR = os.path.join(ROOT_DIR, '.config_secret')
 CONFIG_SECRET_COMMON_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_common.json')
 CONFIG_SECRET_DEBUG_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_debug.json')
 CONFIG_SECRET_DEPLOY_FILE = os.path.join(CONFIG_SECRET_DIR, 'settings_deploy.json')
+
 config_secret_common = json.loads(open(CONFIG_SECRET_COMMON_FILE).read())
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -25,6 +26,7 @@ SECRET_KEY = config_secret_common['django']['secret_key']
 
 # Custom User Model
 AUTH_USER_MODEL = 'member.MyUser'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,9 +40,12 @@ INSTALLED_APPS = [
     'post',
     'group',
     'rest_framework',
+
     'django_filters',
     'rest_framework.authtoken',
+
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -108,6 +113,7 @@ STATICFILES_DIRS = [
     STATIC_DIR,
 ]
 
+
 # DRF settings
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': (
@@ -115,5 +121,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
+

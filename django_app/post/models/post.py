@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 
 from group.models import MyGroup
-from utils.fields import CustomImageField
 
 __all__ = (
     'Post',
@@ -35,6 +34,14 @@ class Post(models.Model):
         through='PostLike',
         related_name='like_posts',
     )
+    like_count = models.PositiveIntegerField(default=0)
+
+    def calc_like_count(self):
+        self.like_count = self.like_users.count()
+        self.save()
+
+    def __str__(self):
+        return '\n작성자: {}\n내용: {}'.format(self.author, self.content)
 
     class Meta:
         ordering = ['-pk']

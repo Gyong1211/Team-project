@@ -23,3 +23,10 @@ class ObjectOwnerIsRequestUserOrReadOnly(permissions.BasePermission):
 class ObjectGroupOwnerIsNotRequestUser(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.group.owner != request.user
+
+
+class ObjectAuthorIsRequestUser(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.author == request.user
