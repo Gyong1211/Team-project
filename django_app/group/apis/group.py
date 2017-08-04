@@ -18,7 +18,6 @@ class GroupListCreateView(generics.ListCreateAPIView):
     search_fields = ('name', 'description', 'tags__name')  # 그룹의 name, description, 그룹이 가진 tag의 name으로 리스트 검색
     filter_fields = ('member',)  # member의 pk로 해당 유저가 가입한 그룹 목록 필터링
     permission_classes = (
-        permissions.IsAuthenticated,
         permissions.IsAuthenticatedOrReadOnly,
     )
 
