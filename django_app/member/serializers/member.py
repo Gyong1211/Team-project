@@ -1,11 +1,12 @@
 from rest_framework import serializers
 
-from ..models import MyUser
+from ..models import MyUser, UserRelation
 
 __all__ = (
     'UserSerializer',
     'UserUpdateSerializer',
     'UserCreateSerializer',
+    'UserRelationSerializer',
 )
 
 
@@ -63,7 +64,6 @@ class UserCreateSerializer(serializers.Serializer):
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = MyUser
         exclude = (
@@ -74,3 +74,18 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'date_joined',
         )
+
+
+class UserRelationSerializer(serializers.ModelSerializer):
+    to_user_pk = serializers.IntegerField(required=True)
+    class Meta:
+        model = UserRelation
+        fields = (
+            'to_user',
+            'from_user',
+            'to_user_pk'
+        )
+        read_only_fields = (
+            'created_date',
+        )
+
