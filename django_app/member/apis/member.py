@@ -1,6 +1,8 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from member.serializers import UserUpdateSerializer
+from member.serializers import UserUpdateSerializer, UserRelationCreateSerializer
 from utils.permissions import ObjectIsRequestUser
 from ..models import MyUser
 from ..serializers import UserSerializer, UserCreateSerializer
@@ -24,8 +26,10 @@ class UserUpdateView(generics.RetrieveUpdateDestroyAPIView):
         ObjectIsRequestUser,
     )
 
-    # def get_serializer_class(self):
-    #     if self.request.method == 'PATCH':
-    #         return UserUpdateSerializer
-    #     if self.request.method == 'DELETE':
-    #         return UserUpdateSerializer
+
+class UserRelationView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UserRelationCreateSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save(from_user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
