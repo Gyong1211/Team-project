@@ -7,6 +7,7 @@ __all__ = (
     'UserUpdateSerializer',
     'UserCreateSerializer',
     'UserRelationSerializer',
+    'UserRelationCreateSerializer',
 )
 
 
@@ -19,6 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'username',
             'profile_img',
+            'group',
         )
 
 
@@ -77,15 +79,38 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class UserRelationSerializer(serializers.ModelSerializer):
-    to_user_pk = serializers.IntegerField(required=True)
+    from_user = UserSerializer
+    to_user = UserSerializer()
+
     class Meta:
         model = UserRelation
         fields = (
-            'to_user',
             'from_user',
-            'to_user_pk'
+            'to_user',
         )
         read_only_fields = (
             'created_date',
         )
 
+
+class UserRelationCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRelation
+        fields = (
+            'from_user',
+            'to_user',
+        )
+        read_only_fields = (
+            'from_user',
+            'created_date',
+        )
+
+    def validate_to_user(self, to_user):
+        if self.context['request'].user == to_user:
+            raise serializers.ValidationError('본인은 팔로우 할 수 없습니다.')
+        elif self.Meta.model.objects.filter(
+                from_user=self.context['request'].user,
+                to_user=to_user
+        ).exists():
+            raise serializers.ValidationError('이미  팔로우 중입니다.')
+        return to_user
