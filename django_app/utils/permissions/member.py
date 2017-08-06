@@ -14,5 +14,7 @@ class ObjectIsRequestUser(permissions.BasePermission):
 
 
 class ObjectGroupOwnerIsNotRequestUser(permissions.BasePermission):
+    message = '그룹장은 탈퇴할 수 없습니다.'
+
     def has_object_permission(self, request, view, obj):
         return obj.group.owner != request.user
