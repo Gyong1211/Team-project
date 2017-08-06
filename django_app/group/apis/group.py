@@ -1,6 +1,9 @@
 from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, filters
+from rest_framework import generics, permissions, filters, status
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from utils.permissions import ObjectOwnerIsRequestUser, ObjectOwnerIsRequestUserOrReadOnly
 from ..serializers import *
@@ -10,6 +13,7 @@ __all__ = (
     'GroupListCreateView',
     'GroupRetrieveUpdateDestroyView',
     'GroupOwnerUpdateView',
+    'GroupProfileImgDestroyView',
 )
 
 
@@ -60,3 +64,20 @@ class GroupOwnerUpdateView(generics.UpdateAPIView):
         ObjectOwnerIsRequestUser,
     )
     serializer_class = GroupOwnerUpdateSerializer
+
+
+class GroupProfileImgDestroyView(APIView):
+    permission_classes = (
+        ObjectOwnerIsRequestUser,
+    )
+
+    def get_object(self, pk):
+        obj = get_object_or_404(MyGroup, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def delete(self, *args, **kwargs):
+        group = self.get_object(kwargs.get('pk'))
+        group.profile_img = None
+        group.save()
+        return Response({"detail": "그룹의 프로필 이미지가 삭제되었습니다."}, status=status.HTTP_202_ACCEPTED)
