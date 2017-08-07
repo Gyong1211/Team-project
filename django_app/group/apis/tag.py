@@ -4,15 +4,16 @@ from ..serializers import TagSerializer
 from ..models import GroupTag
 
 __all__ = (
-    'TagListView',
+    'TagListCreateView',
 )
 
 
-class TagListView(generics.ListAPIView):
+class TagListCreateView(generics.ListCreateAPIView):
     queryset = GroupTag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
-    filter_backends = (filters.SearchFilter,)
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('name',)
+    ordering_fields = ('name',)
