@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -10,6 +10,9 @@ from ..serializers import UserSerializer, UserCreateSerializer
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = MyUser.objects.all()
+    filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
+    search_fields = ('^nickname', )
+    filter_fields = ('group', )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
