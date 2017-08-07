@@ -15,8 +15,9 @@ __all__ = (
 
 ##  내가 속한 그룹의 Post List
 class MyGroupPostListView(generics.ListAPIView):
-
     serializer_class = PostSerializer
+
+    # pagination_class = PostPagination
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -27,7 +28,6 @@ class MyGroupPostListView(generics.ListAPIView):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
 
 
 ## 범용적 post list create
@@ -57,12 +57,20 @@ class PostListCreateView(generics.ListCreateAPIView):
 
 
 class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                return Post.objects.all()
+            else:
+                return Post.objects.exclude(group__group_type="HIDDEN") | \
+                       Post.objects.filter(Q(group__group_type="HIDDEN") & Q(author=self.request.user))
+        else:
+            return Post.objects.exclude(group__group_type="HIDDEN")
+
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         ObjectAuthorIsRequestUser,
     )
-    serializer_class = PostUpdateSerializer
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:

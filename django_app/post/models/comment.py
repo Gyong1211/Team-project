@@ -10,7 +10,7 @@ __all__ = (
 
 class Comment(models.Model):
     post = models.ForeignKey(Post)
-    user = models.ForeignKey(MyUser)
+    author = models.ForeignKey(MyUser)
     content = models.CharField(max_length=150)
     created_date = models.DateTimeField(auto_now_add=True)
 
