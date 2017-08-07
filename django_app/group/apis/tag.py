@@ -8,7 +8,7 @@ __all__ = (
 )
 
 
-class TagListCreateView(generics.ListCreateAPIView):
+class TagListView(generics.ListAPIView):
     queryset = GroupTag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (
