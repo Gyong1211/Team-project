@@ -4,7 +4,7 @@ from ..serializers import TagSerializer
 from ..models import GroupTag
 
 __all__ = (
-    'TagListCreateView',
+    'TagListView',
 )
 
 
