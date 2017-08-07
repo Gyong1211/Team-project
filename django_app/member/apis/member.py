@@ -31,6 +31,9 @@ class UserUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserRelationView(APIView):
+    permission_classes = (
+        ObjectIsRequestUser,
+    )
 
     def post(self, request, *args, **kwargs):
         serializer = UserRelationCreateSerializer(data=request.data, context={"request": request})

@@ -112,5 +112,5 @@ class UserRelationCreateSerializer(serializers.ModelSerializer):
                 from_user=self.context['request'].user,
                 to_user=to_user
         ).exists():
-            raise serializers.ValidationError('이미  팔로우 중입니다.')
+            raise serializers.ValidationError('이미 팔로우 중입니다.')
         return to_user
