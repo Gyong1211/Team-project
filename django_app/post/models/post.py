@@ -35,6 +35,7 @@ class Post(models.Model):
         related_name='like_posts',
     )
     like_count = models.PositiveIntegerField(default=0)
+    created_date = models.DateTimeField(auto_now_add=True)
 
     def calc_like_count(self):
         self.like_count = self.like_users.count()
@@ -44,7 +45,7 @@ class Post(models.Model):
         return '\n작성자: {}\n내용: {}'.format(self.author, self.content)
 
     class Meta:
-        ordering = ['-pk']
+        ordering = ['-created_date']
 
 
 class PostLike(models.Model):
