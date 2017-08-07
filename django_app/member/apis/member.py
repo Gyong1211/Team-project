@@ -28,8 +28,14 @@ class UserUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserRelationView(APIView):
+
     def post(self, request, *args, **kwargs):
         serializer = UserRelationCreateSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save(from_user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, *args, **kwargs):
+        relation = self.get_object()
+        relation.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
