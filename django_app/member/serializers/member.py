@@ -6,7 +6,6 @@ __all__ = (
     'UserSerializer',
     'UserUpdateSerializer',
     'UserCreateSerializer',
-    'UserRelationSerializer',
     'UserRelationCreateSerializer',
 )
 
@@ -20,8 +19,15 @@ class UserSerializer(serializers.ModelSerializer):
             'nickname',
             'username',
             'profile_img',
-            'group',
         )
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if self.context['request'].user.is_authenticated:
+            ret['is_follow'] = self.context['request'].user.is_follow(instance)
+            return ret
+        else:
+            return ret
 
 
 class UserCreateSerializer(serializers.Serializer):
@@ -75,21 +81,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'date_joined',
-        )
-
-
-class UserRelationSerializer(serializers.ModelSerializer):
-    from_user = UserSerializer
-    to_user = UserSerializer()
-
-    class Meta:
-        model = UserRelation
-        fields = (
-            'from_user',
-            'to_user',
-        )
-        read_only_fields = (
-            'created_date',
         )
 
 
