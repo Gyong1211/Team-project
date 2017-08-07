@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 
 from member.serializers import UserUpdateSerializer, UserRelationCreateSerializer
 from utils.permissions import ObjectIsRequestUser
-from ..models import MyUser
+from ..models import MyUser, UserRelation
 from ..serializers import UserSerializer, UserCreateSerializer
 
 
@@ -48,7 +48,7 @@ class UserRelationCreateDestroyView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, *args, **kwargs):
-        relation = self.get_object()
+        relation = get_object_or_404(UserRelation, from_user=request.user.pk, to_user=request.data.get('to_user'))
         relation.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
