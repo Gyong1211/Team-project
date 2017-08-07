@@ -1,8 +1,15 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, AbstractUser
 from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.authtoken.models import Token
+
+from config.settings import AUTH_USER_MODEL
+from group.models import MyGroup
+from utils.fields import CustomImageField
 
 
 class MyUserManager(BaseUserManager):
@@ -44,6 +51,11 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('이메일'), unique=True)
     username = models.CharField(_('이름'), max_length=12, blank=True)
     nickname = models.CharField(_('닉네임'), max_length=16, unique=True)
+    profile_img = CustomImageField(
+        upload_to='member',
+        blank=True,
+        default_static_image='images/no_profile.png'
+    )
     is_staff = models.BooleanField(
         _('스태프 권한'),
         default=False,
@@ -57,6 +69,16 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         ),
     )
     date_joined = models.DateTimeField(_('가입일자'), default=timezone.now)
+    relations = models.ManyToManyField(
+        'self',
+        through='UserRelation',
+        symmetrical=False
+    )
+    group = models.ManyToManyField(
+        MyGroup,
+        through='Membership',
+        related_name='member',
+    )
 
     objects = MyUserManager()
 
@@ -80,3 +102,75 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         "유저의 닉네임을 반환합니다. (Django admin page에서 사용)"
         return self.nickname
+
+    def follow(self, user):
+        if not isinstance(user, MyUser):
+            raise ValueError("'user' 는 반드시 MyUser 인자여야 합니다")
+        self.following.get_or_create(
+            to_user=user,
+        )
+
+    def unfollow(self, user):
+        self.following.get(
+            to_user=user,
+        ).delete()
+
+    def follow_toggle(self, user):
+        relation, relation_created = self.following.get_or_create(to_user=user)
+        if not relation_created:
+            relation.delete()
+        else:
+            return relation
+
+    def is_follow(self, user):
+        # 해당 유저(self)가 입력받은 유저를 follow하고 있는지의 여부를 Boolean 값으로 반환
+        return self.following.filter(to_user=user).exists()
+
+    def is_follower(self, user):
+        # 해당 유저(self)가 입력받은 유저의 follower인지 여부를 Boolean 값으로 반환
+        return self.follower.filter(from_user=user).exists()
+
+    # @receiver(post_save, sender=AUTH_USER_MODEL)
+    # def create_auth_token(sender, instance=None, created=False, **kwargs):
+    #     if created:
+    #         Token.objects.create(user=instance)
+
+
+class UserRelation(models.Model):
+    from_user = models.ForeignKey(MyUser, related_name='following')
+    to_user = models.ForeignKey(MyUser, related_name='follower')
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Relation from {} to {}'.format(
+            self.from_user,
+            self.to_user,
+        )
+
+    class Meta:
+        unique_together = (
+            ('from_user', 'to_user'),
+        )
+
+
+class Membership(models.Model):
+    user = models.ForeignKey(
+        MyUser,
+        on_delete=models.CASCADE
+    )
+    group = models.ForeignKey(
+        MyGroup,
+        on_delete=models.CASCADE
+    )
+    joined_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = (
+            ('user', 'group')
+        )
+
+
+@receiver(post_save, sender=Membership)
+@receiver(post_delete, sender=Membership)
+def update_num_of_members(sender, instance, **kwargs):
+    instance.group.calc_num_of_members()
