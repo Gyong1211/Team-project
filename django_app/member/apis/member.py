@@ -58,7 +58,7 @@ class FollowerListView(APIView):
         pk = kwargs.get('pk')
         user = get_object_or_404(MyUser, pk=pk)
         queryset = MyUser.objects.filter(pk__in=user.follower.all().values('from_user'))
-        serializer = UserSerializer(queryset, many=True)
+        serializer = UserSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -67,5 +67,5 @@ class FollowingListView(APIView):
         pk = kwargs.get('pk')
         user = get_object_or_404(MyUser, pk=pk)
         queryset = MyUser.objects.filter(pk__in=user.following.all().values('to_user'))
-        serializer = UserSerializer(queryset, many=True)
+        serializer = UserSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
