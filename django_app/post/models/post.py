@@ -65,3 +65,4 @@ class PostLike(models.Model):
         unique_together = (
             ('post', 'user')
         )
+

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from group.models import MyGroup
 from group.serializers import GroupSerializer
 from member.serializers import UserSerializer
-from ..models import Post
+from ..models import Post, PostLike
 from .comment import CommentSerializer
 
 
@@ -63,4 +63,14 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'group',
+        )
+
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostLike
+        field = (
+            'pk',
+            'user',
+            'post',
         )

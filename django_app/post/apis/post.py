@@ -1,14 +1,18 @@
 from django.db.models import Q
 from rest_framework import generics, permissions, filters
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from utils.permissions import ObjectAuthorIsRequestUser
-from ..models import Post
+from ..models import Post, PostLike
 from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer
 
 __all__ = (
     'MyGroupPostListView',
     'PostListCreateView',
     'PostRetrieveUpdateDestroyView',
+    'PostLikeToggle',
 
 )
 
@@ -33,7 +37,7 @@ class MyGroupPostListView(generics.ListAPIView):
 # 범용적 post list create
 class PostListCreateView(generics.ListCreateAPIView):
     permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly
+        permissions.IsAuthenticatedOrReadOnly,
     )
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('author', 'group',)
@@ -80,3 +84,26 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return PostSerializer
         else:
             return PostUpdateSerializer
+
+
+class PostLikeToggle(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def get(self, request, post_pk):
+        post = get_object_or_404(Post, pk=post_pk)
+        post_like, post_like_created = post.postlike_set.get_or_create(user=request.user)
+
+        if not post_like_created:
+            post_like.delete()
+            post.like_count -= 1
+
+        elif post_like_created:
+            post.like_count += 1
+
+        post.save()
+        content = {
+            'like_or_not': post_like_created
+        }
+        return Response(content)
