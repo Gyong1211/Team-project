@@ -93,7 +93,7 @@ class UserPasswordUpdateView(APIView):
         return Response({"detail": '비밀번호가 변경되었습니다.'}, status=status.HTTP_200_OK)
 
 
-class FollowerListView(APIView):
+class UserFollowerListView(APIView):
     def get(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         user = get_object_or_404(MyUser, pk=pk)
@@ -102,7 +102,7 @@ class FollowerListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class FollowingListView(APIView):
+class UserFollowingListView(APIView):
     def get(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         user = get_object_or_404(MyUser, pk=pk)
