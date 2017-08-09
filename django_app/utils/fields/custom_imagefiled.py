@@ -6,7 +6,7 @@ from django.utils.module_loading import import_string
 class CustomImageFieldFile(ImageFieldFile):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.name and self.field.static_image_path:
+        if (not self.name or self.name == self.field.static_image_path) and self.field.static_image_path:
             self.name = self.field.static_image_path
             self.storage = import_string(settings.STATICFILES_STORAGE)()
 
