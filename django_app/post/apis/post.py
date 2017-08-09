@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.permissions import ObjectAuthorIsRequestUser
-from ..models import Post, PostLike
+from ..models import Post
 from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer
 
 __all__ = (
@@ -80,11 +80,7 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return Post.objects.exclude(group__group_type="HIDDEN")
 
-    def get_serializer_class(self):
-        if self.request.method in permissions.SAFE_METHODS:
-            return PostSerializer
-        else:
-            return PostUpdateSerializer
+    serializer_class = PostUpdateSerializer
 
 
 class PostLikeToggle(APIView):

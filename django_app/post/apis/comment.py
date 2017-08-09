@@ -1,7 +1,5 @@
-from django.db.models import Q
 from django.http import Http404
 from rest_framework import generics, permissions
-from rest_framework.generics import get_object_or_404
 
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Comment, Post
