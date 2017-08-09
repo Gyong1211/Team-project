@@ -7,7 +7,7 @@ __all__ = (
 
 
 class ObjectIsRequestUser(permissions.BasePermission):
-    message = '해당 유저는 요청을 수행할 수 없습니다'
+    message = '다른 사용자에 대한 요청은 수행할 수 없습니다.'
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
@@ -20,3 +20,12 @@ class ObjectGroupOwnerIsNotRequestUser(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.group.owner != request.user
+
+
+class ObjectFromUserIsRequestUser(permissions.BasePermission):
+    message = '다른 사용자의 비밀번호는 변경할 수 없습니다.'
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return obj.from_user == request.user

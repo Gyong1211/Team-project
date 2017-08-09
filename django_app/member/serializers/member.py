@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from ..models import MyUser, UserRelation
@@ -7,6 +8,7 @@ __all__ = (
     'UserUpdateSerializer',
     'UserCreateSerializer',
     'UserRelationCreateSerializer',
+    'UserPasswordUpdateSerializer',
 )
 
 
@@ -80,10 +82,12 @@ class UserCreateSerializer(serializers.Serializer):
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        exclude = (
-            'is_staff',
-            'is_active',
-            'last_login',
+        fields = (
+            'pk',
+            'email',
+            'nickname',
+            'username',
+            'profile_img',
         )
         read_only_fields = (
             'date_joined',
@@ -111,3 +115,37 @@ class UserRelationCreateSerializer(serializers.ModelSerializer):
         ).exists():
             raise serializers.ValidationError('이미 팔로우 중입니다.')
         return to_user
+
+
+class UserPasswordUpdateSerializer(serializers.Serializer):
+    ori_password = serializers.CharField(max_length=36, required=True, write_only=True)
+    password1 = serializers.CharField(max_length=36, required=True, write_only=True)
+    password2 = serializers.CharField(max_length=36, required=True, write_only=True)
+
+    class Meta:
+        model = MyUser
+        fields = (
+            'pk',
+        )
+        read_only_fields = (
+            'email',
+            'nickname',
+            'username',
+        )
+
+    def validate_ori_password(self, ori_password):
+        if not authenticate(email=self.instance.email, password=ori_password):
+            raise serializers.ValidationError('기존 패스워드가 틀렸습니다.')
+        return ori_password
+
+    def validate(self, data):
+        if data['password1'] != data['password2']:
+            raise serializers.ValidationError('새 비밀번호가 다르게 입력되었습니다.')
+        return data
+
+    def save(self):
+        user = self.instance
+        user.set_password(self.validated_data.get('password2'))
+        user.save()
+        return self
+
