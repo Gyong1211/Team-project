@@ -150,3 +150,4 @@ class UserPasswordUpdateSerializer(serializers.Serializer):
         user.set_password(self.validated_data.get('password2'))
         user.save()
         return self
+
