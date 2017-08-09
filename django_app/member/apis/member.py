@@ -5,7 +5,6 @@ from rest_framework.views import APIView
 
 from member.serializers import UserUpdateSerializer, UserRelationCreateSerializer, UserPasswordUpdateSerializer
 from utils.permissions import ObjectIsRequestUser
-from utils.permissions.member import ObjectFromUserIsRequestUser
 from ..models import MyUser, UserRelation
 from ..serializers import UserSerializer, UserCreateSerializer
 
@@ -37,9 +36,26 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return UserUpdateSerializer
 
 
+class UserProfileImgDestroyView(APIView):
+    permission_classes = (
+        ObjectIsRequestUser,
+    )
+
+    def get_object(self, pk):
+        obj = get_object_or_404(MyUser, pk=pk)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+    def delete(self, *args, **kwargs):
+        user = self.get_object(kwargs.get('pk'))
+        user.profile_img = None
+        user.save()
+        return Response({"detail": "유저의 프로필 이미지가 삭제되었습니다."}, status=status.HTTP_202_ACCEPTED)
+
+
 class UserRelationCreateDestroyView(APIView):
     permission_classes = (
-        ObjectFromUserIsRequestUser,
+        permissions.IsAuthenticated,
     )
 
     def get_object(self, from_user_pk, to_user_pk):
@@ -82,7 +98,7 @@ class FollowerListView(APIView):
         pk = kwargs.get('pk')
         user = get_object_or_404(MyUser, pk=pk)
         queryset = MyUser.objects.filter(pk__in=user.follower.all().values('from_user'))
-        serializer = UserSerializer(queryset, many=True)
+        serializer = UserSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -91,6 +107,5 @@ class FollowingListView(APIView):
         pk = kwargs.get('pk')
         user = get_object_or_404(MyUser, pk=pk)
         queryset = MyUser.objects.filter(pk__in=user.following.all().values('to_user'))
-        serializer = UserSerializer(queryset, many=True)
+        serializer = UserSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
-
