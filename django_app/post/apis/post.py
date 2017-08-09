@@ -22,13 +22,14 @@ class MyGroupPostListView(generics.ListAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
-    serializer_class = PostSerializer
 
     # pagination_class = PostPagination
 
     def get_queryset(self):
         user = self.request.user
         return Post.objects.filter(group__in=user.group.all())
+
+    serializer_class = PostSerializer
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
