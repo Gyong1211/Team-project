@@ -23,7 +23,6 @@ class PostSerializer(serializers.ModelSerializer):
             'image',
             'video',
             'comment_set',
-            'like_users',
             'like_count'
         )
         read_only_fields = (
@@ -31,7 +30,6 @@ class PostSerializer(serializers.ModelSerializer):
             'author',
             'group',
             'comment_set',
-            'like_users',
             'like_count'
         )
 

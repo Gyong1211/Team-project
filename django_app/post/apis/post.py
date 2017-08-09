@@ -22,17 +22,13 @@ class MyGroupPostListView(generics.ListAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
+    serializer_class = PostSerializer
 
     # pagination_class = PostPagination
 
     def get_queryset(self):
         user = self.request.user
         return Post.objects.filter(group__in=user.group.all())
-
-    serializer_class = PostSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
 
 
 # 범용적 post list create
@@ -69,6 +65,7 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticatedOrReadOnly,
         ObjectAuthorIsRequestUser,
     )
+    serializer_class = PostUpdateSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -80,16 +77,14 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return Post.objects.exclude(group__group_type="HIDDEN")
 
-    serializer_class = PostUpdateSerializer
-
 
 class PostLikeToggle(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
 
-    def get(self, request, post_pk):
-        post = get_object_or_404(Post, pk=post_pk)
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         post_like, post_like_created = post.postlike_set.get_or_create(user=request.user)
 
         if not post_like_created:
