@@ -2,8 +2,9 @@ from rest_framework import serializers
 
 from group.models import MyGroup
 from group.serializers import GroupSerializer
+from member.models import MyUser
 from member.serializers import UserSerializer
-from ..models import Post
+from ..models import Post, PostLike
 from .comment import CommentSerializer
 
 
@@ -18,18 +19,24 @@ class PostSerializer(serializers.ModelSerializer):
             'pk',
             'author',
             'group',
+            'content',
             'image',
             'video',
-            'content',
             'comment_set',
-            'like_users',
             'like_count'
         )
         read_only_fields = (
+            'pk',
             'author',
             'group',
             'comment_set',
+            'like_count'
         )
+
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        ret['is_like'] = self.context['request'].user in obj.like_users.all()
+        return ret
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
@@ -52,15 +59,41 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostUpdateSerializer(serializers.ModelSerializer):
+    comment_set = CommentSerializer(many=True, read_only=True)
+
     class Meta:
         model = Post
         fields = (
             'pk',
+            'author',
             'group',
             'content',
             'image',
             'video',
+            'comment_set',
+            'like_users',
+            'like_count',
         )
         read_only_fields = (
+            'pk',
+            'author',
             'group',
+            'comment_set',
+            'like_users',
+            'like_count',
+        )
+
+    def to_representation(self, obj):
+        ret = super().to_representation(obj)
+        ret['is_like'] = self.context['request'].user in obj.like_users.all()
+        return ret
+
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostLike
+        field = (
+            'pk',
+            'user',
+            'post',
         )
