@@ -23,11 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        if self.context['request'].user.is_authenticated:
+        if self.context['request'].user.is_authenticated and not self.context['request'].user == instance:
             ret['is_follow'] = self.context['request'].user.is_follow(instance)
-            return ret
-        else:
-            return ret
+        return ret
 
 
 class UserCreateSerializer(serializers.Serializer):
