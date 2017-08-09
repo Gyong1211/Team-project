@@ -20,3 +20,4 @@ class CommentSerializer(serializers.ModelSerializer):
             'author',
             'created_date'
         )
+

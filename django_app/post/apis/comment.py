@@ -1,5 +1,6 @@
-from django.db.models import Q
+from django.http import Http404
 from rest_framework import generics, permissions
+from rest_framework.generics import get_object_or_404
 
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Comment, Post
@@ -12,27 +13,25 @@ __all__ = (
 
 
 class CommentCreateView(generics.CreateAPIView):
-    # def get_queryset(self):
-    #     if 'pk' in self.kwargs:
-    #         pk = self.kwargs['pk']
-    #         Comment.objects.filter(post_set__pk=pk)
-    #     else:
-    #         None
-    queryset = Comment.objects.all()
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
     serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        post_pk = self.kwargs['pk']
+        return Comment.objects.filter(post__pk=post_pk)
 
     def perform_create(self, serializer):
         post_pk = self.kwargs['pk']
-        serializer.save(author=self.request.user, post=Post.objects.get(pk=post_pk))
+        post = get_object_or_404(Post, pk=post_pk)
+        serializer.save(author=self.request.user, post=post)
 
 
 class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    # def get_queryset(self):
-    #     if self.request.user.is_authenticated:
-    #         return Comment.objects.filter(author=self.request.user)
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         ObjectAuthorIsRequestUser,
     )
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
