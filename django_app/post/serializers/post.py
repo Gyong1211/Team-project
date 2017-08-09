@@ -18,17 +18,20 @@ class PostSerializer(serializers.ModelSerializer):
             'pk',
             'author',
             'group',
+            'content',
             'image',
             'video',
-            'content',
             'comment_set',
             'like_users',
             'like_count'
         )
         read_only_fields = (
+            'pk',
             'author',
             'group',
             'comment_set',
+            'like_users',
+            'like_count'
         )
 
 
@@ -52,17 +55,29 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostUpdateSerializer(serializers.ModelSerializer):
+    comment_set = CommentSerializer(many=True, read_only=True)
+    like_posts__user = UserSerializer(read_only=True)
+
     class Meta:
         model = Post
         fields = (
             'pk',
+            'author',
             'group',
             'content',
             'image',
             'video',
+            'comment_set',
+            'like_posts__user',
+            'like_count'
         )
         read_only_fields = (
+            'pk',
+            'author',
             'group',
+            'comment_set',
+            'like_posts__user',
+            'like_count'
         )
 
 

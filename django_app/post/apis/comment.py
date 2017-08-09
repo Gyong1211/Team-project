@@ -25,6 +25,10 @@ class CommentCreateView(generics.CreateAPIView):
         post_pk = self.kwargs['pk']
         serializer.save(author=self.request.user, post=Post.objects.get(pk=post_pk))
 
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+
 
 class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     # def get_queryset(self):

@@ -19,16 +19,16 @@ __all__ = (
 
 #  내가 속한 그룹의 Post List
 class MyGroupPostListView(generics.ListAPIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
     serializer_class = PostSerializer
 
     # pagination_class = PostPagination
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            return Post.objects.filter(group__in=user.group.all())
-        else:
-            return None
+        user = self.request.user
+        return Post.objects.filter(group__in=user.group.all())
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
