@@ -7,6 +7,8 @@ __all__ = (
 
 
 class ObjectIsRequestUser(permissions.BasePermission):
+    message = '해당 유저는 요청을 수행할 수 없습니다'
+
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True

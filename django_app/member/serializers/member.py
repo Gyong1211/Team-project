@@ -33,6 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=125)
     nickname = serializers.CharField(max_length=16)
+    username = serializers.CharField(max_length=12)
     password1 = serializers.CharField(max_length=24, write_only=True)
     password2 = serializers.CharField(max_length=24, write_only=True)
 
@@ -45,6 +46,11 @@ class UserCreateSerializer(serializers.Serializer):
         if MyUser.objects.filter(nickname=nickname).exists():
             raise serializers.ValidationError('존재하는 nickname 입니다')
         return nickname
+
+    def validate_username(self, username):
+        if MyUser.objects.filter(username=username).exists():
+            return username
+        return username
 
     def validate(self, data):
         if data['password1'] != data['password2']:
@@ -63,10 +69,12 @@ class UserCreateSerializer(serializers.Serializer):
         email = self.validated_data.get('email', '')
         password = self.validated_data.get('password1', '')
         nickname = self.validated_data.get('nickname', '')
+        username = self.validated_data.get('username', '')
         user = MyUser.objects.create_user(
             email=email,
             password=password,
             nickname=nickname,
+            username=username,
         )
         return user
 
