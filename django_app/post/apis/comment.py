@@ -7,12 +7,12 @@ from ..models import Comment, Post
 from ..serializers import CommentSerializer
 
 __all__ = (
-    'CommentCreateView',
+    'CommentListCreateView',
     'CommentRetrieveUpdateDestroyView',
 )
 
 
-class CommentCreateView(generics.CreateAPIView):
+class CommentListCreateView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )

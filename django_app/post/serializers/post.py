@@ -10,7 +10,6 @@ from .comment import CommentSerializer
 
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
-    comment_set = CommentSerializer(many=True, read_only=True)
     group = GroupSerializer(read_only=True)
 
     class Meta:
@@ -22,14 +21,12 @@ class PostSerializer(serializers.ModelSerializer):
             'content',
             'image',
             'video',
-            'comment_set',
             'like_count'
         )
         read_only_fields = (
             'pk',
             'author',
             'group',
-            'comment_set',
             'like_count'
         )
 
@@ -59,7 +56,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class PostUpdateSerializer(serializers.ModelSerializer):
-    comment_set = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
@@ -70,7 +66,6 @@ class PostUpdateSerializer(serializers.ModelSerializer):
             'content',
             'image',
             'video',
-            'comment_set',
             'like_users',
             'like_count',
         )
@@ -78,7 +73,6 @@ class PostUpdateSerializer(serializers.ModelSerializer):
             'pk',
             'author',
             'group',
-            'comment_set',
             'like_users',
             'like_count',
         )
