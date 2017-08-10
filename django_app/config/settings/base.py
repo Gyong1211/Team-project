@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
     'django_filters',
     'rest_framework.authtoken',
+    'corsheaders',
 
 ]
 
@@ -55,6 +56,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -126,3 +130,7 @@ REST_FRAMEWORK = {
     )
 }
 
+# Django CORS settings
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8080',
+)
