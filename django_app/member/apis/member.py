@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from member.serializers import UserUpdateSerializer, UserRelationCreateSerializer, UserPasswordUpdateSerializer
-from utils.pagination.pagination import ListPagination
+from utils.paginations.member import ListPagination
 from utils.permissions import ObjectIsRequestUser
 from ..models import MyUser, UserRelation
 from ..serializers import UserSerializer, UserCreateSerializer
