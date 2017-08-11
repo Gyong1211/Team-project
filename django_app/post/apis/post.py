@@ -1,5 +1,5 @@
 from django.db.models import Q
-from rest_framework import generics, permissions, filters
+from rest_framework import generics, permissions, filters, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,8 +13,8 @@ __all__ = (
     'MyGroupPostListView',
     'PostListCreateView',
     'PostRetrieveUpdateDestroyView',
-    'PostLikeToggle',
-    'PostLikeUserList',
+    'PostLikeToggleView',
+    'PostLikeUserListView',
 
 )
 
@@ -80,7 +80,7 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return Post.objects.exclude(group__group_type="HIDDEN")
 
 
-class PostLikeToggle(APIView):
+class PostLikeToggleView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -91,20 +91,14 @@ class PostLikeToggle(APIView):
 
         if not post_like_created:
             post_like.delete()
-            post.like_count -= 1
 
-        elif post_like_created:
-            post.like_count += 1
-
-        post.save()
         content = {
             'like_or_not': post_like_created
         }
-        return Response(content)
+        return Response(content, status=status.HTTP_200_OK)
 
 
-class PostLikeUserList(generics.ListAPIView):
-
+class PostLikeUserListView(generics.ListAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):

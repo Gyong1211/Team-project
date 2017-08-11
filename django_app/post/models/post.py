@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 from group.models import MyGroup
 
@@ -71,3 +73,8 @@ class PostLike(models.Model):
             ('post', 'user')
         )
 
+
+@receiver(post_save, sender=PostLike)
+@receiver(post_delete, sender=PostLike)
+def update_like_count(sender, instance, **kwargs):
+    instance.post.calc_like_count()
