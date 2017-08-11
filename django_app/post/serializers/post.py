@@ -49,14 +49,13 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         user = self.context['request'].user
-        joined_group = MyGroup.objects.filter(member=user)
+        joined_group = user.group.all()
         if data['group'] not in joined_group:
             raise serializers.ValidationError('속한 그룹이 아닙니다.')
         return data
 
 
 class PostUpdateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Post
         fields = (

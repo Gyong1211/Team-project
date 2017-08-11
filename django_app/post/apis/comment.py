@@ -20,7 +20,8 @@ class CommentListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         post_pk = self.kwargs['pk']
-        return Comment.objects.filter(post__pk=post_pk)
+        post = get_object_or_404(Post, pk=post_pk)
+        return post.comment_set.all()
 
     def perform_create(self, serializer):
         post_pk = self.kwargs['pk']
