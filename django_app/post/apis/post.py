@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from member.models import MyUser
+from utils import paginations
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Post
 from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer, UserSerializer
@@ -25,8 +26,7 @@ class MyGroupPostListView(generics.ListAPIView):
         permissions.IsAuthenticated,
     )
     serializer_class = PostSerializer
-
-    # pagination_class = PostPagination
+    pagination_class = paginations.PostListPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -41,6 +41,7 @@ class PostListCreateView(generics.ListCreateAPIView):
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('author', 'group',)
     search_fields = ('content',)
+    pagination_class = paginations.PostListPagination
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
