@@ -4,6 +4,7 @@ from rest_framework import generics, permissions, filters, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from utils import paginations
 
 from utils.permissions import ObjectOwnerIsRequestUser, ObjectOwnerIsRequestUserOrReadOnly
 from ..serializers import *
@@ -24,6 +25,7 @@ class GroupListCreateView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
+    pagination_class = paginations.GroupListPagination
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
