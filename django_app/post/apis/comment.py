@@ -1,21 +1,25 @@
 from django.http import Http404
-from rest_framework import generics, permissions, filters
-from rest_framework.generics import get_object_or_404
+from rest_framework import generics, permissions, filters, status, mixins
+from rest_framework.generics import get_object_or_404, GenericAPIView
+from rest_framework.response import Response
 
 from utils import paginations
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Comment, Post
-from ..serializers import CommentSerializer
+from ..serializers import CommentSerializer, CommentUpdateSerializer
 
 __all__ = (
     'CommentListCreateView',
-    'CommentRetrieveUpdateDestroyView',
+    'CommentUpdateDestroyView',
 )
 
 
 class CommentListCreateView(generics.ListCreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
     filter_backends = (filters.DjangoFilterBackend, )
     filter_fields = ('post', )
     pagination_class = paginations.CommentListPagination
@@ -24,10 +28,21 @@ class CommentListCreateView(generics.ListCreateAPIView):
         serializer.save(author=self.request.user)
 
 
-class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class CommentUpdateDestroyView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, GenericAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         ObjectAuthorIsRequestUser,
     )
     queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return CommentSerializer
+        else:
+            return CommentUpdateSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
