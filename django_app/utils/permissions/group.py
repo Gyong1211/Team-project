@@ -14,7 +14,7 @@ class ObjectOwnerIsRequestUser(permissions.BasePermission):
 
 
 class ObjectOwnerIsRequestUserOrReadOnly(permissions.BasePermission):
-    message = '그룹장 외에는 변경할 수 없습니다.'
+    message = '그룹장 외에는 요청할 수 없습니다.'
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:

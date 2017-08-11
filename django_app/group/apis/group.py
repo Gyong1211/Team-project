@@ -4,6 +4,7 @@ from rest_framework import generics, permissions, filters, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from utils import paginations
 
 from utils.permissions import ObjectOwnerIsRequestUser, ObjectOwnerIsRequestUserOrReadOnly
 from ..serializers import *
@@ -14,6 +15,7 @@ __all__ = (
     'GroupRetrieveUpdateDestroyView',
     'GroupOwnerUpdateView',
     'GroupProfileImgDestroyView',
+    'MyGroupListView',
 )
 
 
@@ -24,6 +26,7 @@ class GroupListCreateView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
+    pagination_class = paginations.GroupListPagination
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -81,3 +84,15 @@ class GroupProfileImgDestroyView(APIView):
         group.profile_img = None
         group.save()
         return Response({"detail": "그룹의 프로필 이미지가 삭제되었습니다."}, status=status.HTTP_202_ACCEPTED)
+
+
+class MyGroupListView(generics.ListAPIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    serializer_class = GroupSerializer
+    pagination_class = paginations.MyGroupListPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.group.all()

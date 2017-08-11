@@ -1,5 +1,6 @@
 from rest_framework import generics, filters, permissions
 
+from utils import paginations
 from ..serializers import TagSerializer
 from ..models import GroupTag
 
@@ -11,9 +12,7 @@ __all__ = (
 class TagListView(generics.ListAPIView):
     queryset = GroupTag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (
-        permissions.IsAuthenticatedOrReadOnly,
-    )
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('name',)
     ordering_fields = ('name',)
+    pagination_class = paginations.TagListPagination
