@@ -34,12 +34,7 @@ class CommentUpdateDestroyView(mixins.UpdateModelMixin, mixins.DestroyModelMixin
         ObjectAuthorIsRequestUser,
     )
     queryset = Comment.objects.all()
-
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return CommentSerializer
-        else:
-            return CommentUpdateSerializer
+    serializer_class = CommentUpdateSerializer
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
