@@ -4,15 +4,17 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from member.models import MyUser
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Post
-from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer
+from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer, UserSerializer
 
 __all__ = (
     'MyGroupPostListView',
     'PostListCreateView',
     'PostRetrieveUpdateDestroyView',
     'PostLikeToggle',
+    'PostLikeUserList',
 
 )
 
@@ -99,3 +101,13 @@ class PostLikeToggle(APIView):
             'like_or_not': post_like_created
         }
         return Response(content)
+
+
+class PostLikeUserList(generics.ListAPIView):
+
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        post_pk = self.kwargs['pk']
+        return MyUser.objects.filter(postlike__post__pk=post_pk)
+

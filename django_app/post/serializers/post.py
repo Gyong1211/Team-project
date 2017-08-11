@@ -66,14 +66,12 @@ class PostUpdateSerializer(serializers.ModelSerializer):
             'content',
             'image',
             'video',
-            'like_users',
             'like_count',
         )
         read_only_fields = (
             'pk',
             'author',
             'group',
-            'like_users',
             'like_count',
         )
 
