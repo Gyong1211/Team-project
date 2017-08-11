@@ -35,10 +35,15 @@ class Post(models.Model):
         related_name='like_posts',
     )
     like_count = models.PositiveIntegerField(default=0)
+    comment_count = models.PositiveIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def calc_like_count(self):
         self.like_count = self.like_users.count()
+        self.save()
+
+    def calc_comment_count(self):
+        self.comment_count = self.comment_set.count()
         self.save()
 
     def __str__(self):

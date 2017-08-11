@@ -21,13 +21,15 @@ class PostSerializer(serializers.ModelSerializer):
             'content',
             'image',
             'video',
-            'like_count'
+            'like_count',
+            'comment_count',
         )
         read_only_fields = (
             'pk',
             'author',
             'group',
-            'like_count'
+            'like_count',
+            'comment_count',
         )
 
     def to_representation(self, obj):
@@ -66,12 +68,14 @@ class PostUpdateSerializer(serializers.ModelSerializer):
             'image',
             'video',
             'like_count',
+            'comment_count',
         )
         read_only_fields = (
             'pk',
             'author',
             'group',
             'like_count',
+            'comment_count',
         )
 
     def to_representation(self, obj):
