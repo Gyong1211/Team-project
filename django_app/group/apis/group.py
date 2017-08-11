@@ -15,6 +15,7 @@ __all__ = (
     'GroupRetrieveUpdateDestroyView',
     'GroupOwnerUpdateView',
     'GroupProfileImgDestroyView',
+    'MyGroupListView',
 )
 
 
@@ -83,3 +84,15 @@ class GroupProfileImgDestroyView(APIView):
         group.profile_img = None
         group.save()
         return Response({"detail": "그룹의 프로필 이미지가 삭제되었습니다."}, status=status.HTTP_202_ACCEPTED)
+
+
+class MyGroupListView(generics.ListAPIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    serializer_class = GroupSerializer
+    pagination_class = paginations.MyGroupListPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.group.all()
