@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from member.serializers import UserUpdateSerializer, UserRelationCreateSerializer, UserPasswordUpdateSerializer
+from utils.paginations.member import ListPagination
 from utils.permissions import ObjectIsRequestUser
 from ..models import MyUser, UserRelation
 from ..serializers import UserSerializer, UserCreateSerializer
@@ -11,6 +12,7 @@ from ..serializers import UserSerializer, UserCreateSerializer
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = MyUser.objects.all()
+    pagination_class = ListPagination
     filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
     search_fields = ('^nickname',)
     filter_fields = ('group',)
@@ -24,6 +26,7 @@ class UserListCreateView(generics.ListCreateAPIView):
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MyUser.objects.all()
+    pagination_class = ListPagination
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
         ObjectIsRequestUser,

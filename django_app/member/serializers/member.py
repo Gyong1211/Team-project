@@ -33,7 +33,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=125)
     nickname = serializers.CharField(max_length=16)
-    username = serializers.CharField(max_length=12)
+    username = serializers.CharField(max_length=12, allow_blank=True)
     password1 = serializers.CharField(max_length=24, write_only=True)
     password2 = serializers.CharField(max_length=24, write_only=True)
 

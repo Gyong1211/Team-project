@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 from group.models import MyGroup
 
@@ -35,10 +37,15 @@ class Post(models.Model):
         related_name='like_posts',
     )
     like_count = models.PositiveIntegerField(default=0)
+    comment_count = models.PositiveIntegerField(default=0)
     created_date = models.DateTimeField(auto_now_add=True)
 
     def calc_like_count(self):
         self.like_count = self.like_users.count()
+        self.save()
+
+    def calc_comment_count(self):
+        self.comment_count = self.comment_set.count()
         self.save()
 
     def __str__(self):
@@ -66,3 +73,8 @@ class PostLike(models.Model):
             ('post', 'user')
         )
 
+
+@receiver(post_save, sender=PostLike)
+@receiver(post_delete, sender=PostLike)
+def update_like_count(sender, instance, **kwargs):
+    instance.post.calc_like_count()

@@ -1,18 +1,21 @@
 from django.db.models import Q
-from rest_framework import generics, permissions, filters
+from rest_framework import generics, permissions, filters, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from member.models import MyUser
+from utils import paginations
 from utils.permissions import ObjectAuthorIsRequestUser
 from ..models import Post
-from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer
+from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer, UserSerializer
 
 __all__ = (
     'MyGroupPostListView',
     'PostListCreateView',
     'PostRetrieveUpdateDestroyView',
-    'PostLikeToggle',
+    'PostLikeToggleView',
+    'PostLikeUserListView',
 
 )
 
@@ -23,8 +26,7 @@ class MyGroupPostListView(generics.ListAPIView):
         permissions.IsAuthenticated,
     )
     serializer_class = PostSerializer
-
-    # pagination_class = PostPagination
+    pagination_class = paginations.PostListPagination
 
     def get_queryset(self):
         user = self.request.user
@@ -39,6 +41,7 @@ class PostListCreateView(generics.ListCreateAPIView):
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('author', 'group',)
     search_fields = ('content',)
+    pagination_class = paginations.PostListPagination
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -78,7 +81,7 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return Post.objects.exclude(group__group_type="HIDDEN")
 
 
-class PostLikeToggle(APIView):
+class PostLikeToggleView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -89,13 +92,17 @@ class PostLikeToggle(APIView):
 
         if not post_like_created:
             post_like.delete()
-            post.like_count -= 1
 
-        elif post_like_created:
-            post.like_count += 1
-
-        post.save()
         content = {
             'like_or_not': post_like_created
         }
-        return Response(content)
+        return Response(content, status=status.HTTP_200_OK)
+
+
+class PostLikeUserListView(generics.ListAPIView):
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        post_pk = self.kwargs['pk']
+        return MyUser.objects.filter(postlike__post__pk=post_pk)
+
