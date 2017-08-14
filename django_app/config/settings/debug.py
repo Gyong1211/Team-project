@@ -21,3 +21,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(ROOT_DIR, '.static_root')
 MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 MEDIA_URL='/media/'
+
+# Celery
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'

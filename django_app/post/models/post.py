@@ -1,9 +1,11 @@
+import time
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from group.models import MyGroup
+from ..tasks import task_update_like_count
 
 __all__ = (
     'Post',
@@ -41,10 +43,12 @@ class Post(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
 
     def calc_like_count(self):
+        time.sleep(1)
         self.like_count = self.like_users.count()
         self.save()
 
     def calc_comment_count(self):
+        time.sleep(1)
         self.comment_count = self.comment_set.count()
         self.save()
 
@@ -74,7 +78,13 @@ class PostLike(models.Model):
         )
 
 
-@receiver(post_save, sender=PostLike)
-@receiver(post_delete, sender=PostLike)
+@receiver(post_save, sender=PostLike, dispatch_uid='postlike_save_update_num_of_members')
+@receiver(post_delete, sender=PostLike, dispatch_uid='postlike_delete_update_num_of_members')
 def update_like_count(sender, instance, **kwargs):
-    instance.post.calc_like_count()
+    print(kwargs['signal'].receivers)
+    if kwargs['signal'].receivers[0][0][0] == 'postlike_save_update_num_of_members':
+        instance.post.like_count += 1
+    else:
+        instance.post.like_count -= 1
+    instance.post.save()
+    task_update_like_count.delay(post_pk=instance.post.pk)

@@ -1,3 +1,4 @@
+import time
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
@@ -50,9 +51,9 @@ class MyGroup(models.Model):
         return 'Group : {}'.format(self.name)
 
     def calc_num_of_members(self):
+        time.sleep(1)
         self.num_of_members = self.member.count()
         self.save()
-        return self.num_of_members
 
     def add_tag(self, input_tag):
         if isinstance(input_tag, str):
