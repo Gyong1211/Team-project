@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 
 from config.settings import AUTH_USER_MODEL
 from group.models import MyGroup
+from group.tasks import task_update_num_of_member
 from utils.fields import CustomImageField
 
 
@@ -171,7 +172,13 @@ class Membership(models.Model):
         )
 
 
-@receiver(post_save, sender=Membership)
-@receiver(post_delete, sender=Membership)
+@receiver(post_save, sender=Membership, dispatch_uid='membership_save_update_num_of_members')
+@receiver(post_delete, sender=Membership, dispatch_uid='membership_delete_update_num_of_members')
 def update_num_of_members(sender, instance, **kwargs):
-    instance.group.calc_num_of_members()
+    print(kwargs['signal'].receivers)
+    if kwargs['signal'].receivers[0][0][0] == 'membership_save_update_num_of_members':
+        instance.group.num_of_members += 1
+    else:
+        instance.group.num_of_members -= 1
+    instance.group.save()
+    task_update_num_of_member.delay(group_pk=instance.group.pk)

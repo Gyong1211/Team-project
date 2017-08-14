@@ -21,3 +21,7 @@ DEFAULT_FILE_STORAGE = 'config.storages.MediaStorage'
 STATICFILES_STORAGE = 'config.storages.StaticStorage'
 MEDIA_URL='/media/'
 STATIC_URL='/static/'
+
+# Celery
+CELERY_BROKER_URL = config_secret_deploy['aws']['elasticache']
+CELERY_RESULT_BACKEND = config_secret_deploy['aws']['elasticache']

@@ -4,6 +4,7 @@ from django.dispatch import receiver
 
 from member.models import MyUser
 from .post import Post
+from ..tasks import task_update_comment_count
 
 __all__ = (
     'Comment',
@@ -23,7 +24,12 @@ class Comment(models.Model):
         return '\n글내용: \n작성자: {}\n댓글 내용: {}'.format(self.post, self.author, self.content)
 
 
-@receiver(post_save, sender=Comment)
-@receiver(post_delete, sender=Comment)
+@receiver(post_save, sender=Comment, dispatch_uid='comment_save_update_num_of_members')
+@receiver(post_delete, sender=Comment, dispatch_uid='comment_delete_update_num_of_members')
 def update_comment_count(sender, instance, **kwargs):
-    instance.post.calc_comment_count()
+    if kwargs['signal'].receivers[0][0][0] == 'comment_save_update_num_of_members':
+        instance.post.comment_count += 1
+    else:
+        instance.post.comment_count -= 1
+    instance.post.save()
+    task_update_comment_count.delay(post_pk=instance.post.pk)
