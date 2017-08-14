@@ -11,6 +11,7 @@ RUN         /root/.pyenv/versions/app/bin/pip install -r .requirements/deploy.tx
 # supervisor file 복사
 COPY        .config/supervisor/uwsgi.conf /etc/supervisor/conf.d/
 COPY        .config/supervisor/nginx.conf /etc/supervisor/conf.d/
+COPY        .config/supervisor/celery.conf /etc/supervisor/conf.d/
 
 # nginx파일 복사
 COPY        .config/nginx/nginx.conf /etc/nginx/nginx.conf
