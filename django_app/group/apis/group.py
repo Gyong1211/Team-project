@@ -83,7 +83,7 @@ class GroupProfileImgDestroyView(APIView):
         group = self.get_object(kwargs.get('pk'))
         group.profile_img = None
         group.save()
-        return Response({"detail": "그룹의 프로필 이미지가 삭제되었습니다."}, status=status.HTTP_202_ACCEPTED)
+        return Response({"detail": "그룹의 프로필 이미지가 삭제되었습니다."}, status=status.HTTP_200_OK)
 
 
 class MyGroupListView(generics.ListAPIView):
