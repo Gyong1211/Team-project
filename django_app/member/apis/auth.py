@@ -24,10 +24,11 @@ class LoginView(APIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['user']
+        user = MyUser.objects.get(email=email)
         token, created = Token.objects.get_or_create(user=email)
         email.last_login = timezone.now()
         email.save(update_fields=['last_login'])
-        return Response({'token': token.key})
+        return Response({'user': user.pk, 'token': token.key})
 
 
 class LogoutView(APIView):
