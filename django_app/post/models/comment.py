@@ -20,9 +20,6 @@ class Comment(models.Model):
     class Meta:
         ordering = ['created_date', ]
 
-    def __str__(self):
-        return '\n글내용: \n작성자: {}\n댓글 내용: {}'.format(self.post, self.author, self.content)
-
 
 @receiver(post_save, sender=Comment, dispatch_uid='comment_save_update_num_of_members')
 @receiver(post_delete, sender=Comment, dispatch_uid='comment_delete_update_num_of_members')
