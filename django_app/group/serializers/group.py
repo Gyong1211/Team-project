@@ -133,7 +133,7 @@ class GroupOwnerUpdateSerializer(serializers.ModelSerializer):
             else:
                 raise serializers.ValidationError('해당 유저는 그룹의 멤버가 아닙니다.')
         else:
-            raise serializers.ValidationError('해당 닉네임을 가진 유저가 없습니다.')
+            raise serializers.ValidationError('잘못된 유저 pk 값입니다.')
 
     def update(self, instance, validated_data):
         new_owner_pk = validated_data.get('new_owner_pk')

@@ -175,7 +175,6 @@ class Membership(models.Model):
 @receiver(post_save, sender=Membership, dispatch_uid='membership_save_update_num_of_members')
 @receiver(post_delete, sender=Membership, dispatch_uid='membership_delete_update_num_of_members')
 def update_num_of_members(sender, instance, **kwargs):
-    print(kwargs['signal'].receivers)
     if kwargs['signal'].receivers[0][0][0] == 'membership_save_update_num_of_members':
         instance.group.num_of_members += 1
     else:
