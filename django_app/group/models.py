@@ -38,7 +38,7 @@ class MyGroup(models.Model):
     profile_img = CustomImageField(
         upload_to='group',
         blank=True,
-        default_static_image='images/no_image.png'
+        default_static_image='images/no_group_img.png'
     )
     description = models.CharField(max_length=120, blank=True, null=True)
     num_of_members = models.PositiveIntegerField(default=0)
