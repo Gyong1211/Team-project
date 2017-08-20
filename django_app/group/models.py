@@ -41,7 +41,7 @@ class MyGroup(models.Model):
         default_static_image='images/no_image.png'
     )
     description = models.CharField(max_length=120, blank=True, null=True)
-    num_of_members = models.PositiveIntegerField(default=1)
+    num_of_members = models.PositiveIntegerField(default=0)
     tags = models.ManyToManyField(
         'GroupTag',
     )

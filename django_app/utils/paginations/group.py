@@ -13,7 +13,7 @@ class GroupListPagination(PageNumberPagination):
 
 
 class MyGroupListPagination(PageNumberPagination):
-    page_size = 12
+    page_size = 11
     page_size_query_param = page_size
 
 

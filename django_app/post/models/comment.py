@@ -24,12 +24,14 @@ class Comment(models.Model):
         return '\n글내용: \n작성자: {}\n댓글 내용: {}'.format(self.post, self.author, self.content)
 
 
-@receiver(post_save, sender=Comment, dispatch_uid='comment_save_update_num_of_members')
-@receiver(post_delete, sender=Comment, dispatch_uid='comment_delete_update_num_of_members')
+@receiver(post_save, sender=Comment, dispatch_uid='comment_save_update_comment_count')
+@receiver(post_delete, sender=Comment, dispatch_uid='comment_delete_update_comment_count')
 def update_comment_count(sender, instance, **kwargs):
-    if kwargs['signal'].receivers[0][0][0] == 'comment_save_update_num_of_members':
+    print(kwargs['signal'].receivers)
+    if kwargs['signal'].receivers[2][0][0] == 'comment_save_update_comment_count':
         instance.post.comment_count += 1
     else:
         instance.post.comment_count -= 1
+    print(instance.post.comment_count)
     instance.post.save()
     task_update_comment_count.delay(post_pk=instance.post.pk)
