@@ -81,7 +81,7 @@ class PostLike(models.Model):
 @receiver(post_save, sender=PostLike, dispatch_uid='postlike_save_update_like_count')
 @receiver(post_delete, sender=PostLike, dispatch_uid='postlike_delete_update_like_count')
 def update_like_count(sender, instance, **kwargs):
-    if kwargs['signal'].receivers[0][0][0] == 'postlike_save_update_like_count':
+    if kwargs['signal'].receivers[1][0][0] == 'postlike_save_update_like_count':
         instance.post.like_count += 1
     else:
         instance.post.like_count -= 1
