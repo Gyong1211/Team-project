@@ -95,4 +95,4 @@ class MyGroupListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return user.group.all()
+        return user.group.order_by('-membership')
