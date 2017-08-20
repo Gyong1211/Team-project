@@ -48,6 +48,9 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'image',
             'video',
         )
+        read_only_fields = (
+            'created_date',
+        )
 
     def validate(self, data):
         user = self.context['request'].user
