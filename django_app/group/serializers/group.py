@@ -33,6 +33,12 @@ class GroupSerializer(serializers.ModelSerializer):
             'num_of_members',
         )
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        if self.context['request'].user.is_authenticated:
+            ret['is_member'] = self.context['request'].user.membership_set.filter(group=instance).exists()
+        return ret
+
 
 class GroupCreateSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
