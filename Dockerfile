@@ -7,6 +7,14 @@ COPY        . /srv/app
 WORKDIR     /srv/app
 # requirements 설치
 RUN         /root/.pyenv/versions/app/bin/pip install -r .requirements/deploy.txt
+# front-end project clone
+WORKDIR     /srv
+RUN         git clone https://github.com/degose/Bond.git front
+# build front-end project
+WORKDIR     /srv/front
+RUN         npm install
+RUN         npm run build
+
 
 # supervisor file 복사
 COPY        .config/supervisor/uwsgi.conf /etc/supervisor/conf.d/

@@ -133,4 +133,5 @@ REST_FRAMEWORK = {
 # Django CORS settings
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
+    'bond.thekym.com',
 )
