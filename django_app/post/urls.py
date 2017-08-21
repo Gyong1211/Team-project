@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from . import apis
 
+app_name = 'post'
 urlpatterns = [
     url(r'^$', apis.PostListCreateView.as_view()),
     url(r'^my-group/$', apis.MyGroupPostListView.as_view()),

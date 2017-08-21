@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from . import apis
 
+app_name = 'member'
 urlpatterns = [
     url(r'^$', apis.UserListCreateView.as_view()),
     url(r'^(?P<pk>\d+)/$', apis.UserRetrieveUpdateDestroyView.as_view()),

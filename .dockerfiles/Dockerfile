@@ -1,4 +1,4 @@
-FROM        fc_tp_ubuntu
+FROM        gyong1211/fc_tp_ubuntu
 MAINTAINER gyong1211@gmail.com
 
 # 현재 경로의 모든 파일(프로젝트 파일)을 컨테이너의 /srv/app 폴더에 복사
@@ -10,11 +10,11 @@ RUN         /root/.pyenv/versions/app/bin/pip install -r .requirements/deploy.tx
 # front-end project clone
 WORKDIR     /srv
 RUN         git clone https://github.com/degose/Bond.git front
-# build front-end project
-WORKDIR     /srv/front
-RUN         npm install
-RUN         npm run build
 
+# build front-end project
+#WORKDIR     /srv/front
+#RUN         npm install
+#RUN         npm run build
 
 # supervisor file 복사
 COPY        .config/supervisor/uwsgi.conf /etc/supervisor/conf.d/
