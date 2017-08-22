@@ -1,4 +1,4 @@
-from rest_framework import serializers, request
+from rest_framework import serializers
 
 from member.models import MyUser
 from member.serializers import UserSerializer
@@ -22,8 +22,8 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = (
             'pk',
             'name',
-            'profile_img',
             'owner',
+            'profile_img',
             'group_type',
             'description',
             'num_of_members',
@@ -56,8 +56,8 @@ class GroupCreateSerializer(serializers.ModelSerializer):
         model = MyGroup
         fields = (
             'pk',
-            'owner',
             'name',
+            'owner',
             'profile_img',
             'group_type',
             'description',
