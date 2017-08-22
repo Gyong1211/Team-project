@@ -3,7 +3,6 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from member.models import MyUser
-from .post import Post
 from ..tasks import task_update_comment_count
 
 __all__ = (
@@ -19,6 +18,9 @@ class Comment(models.Model):
 
     class Meta:
         ordering = ['created_date', ]
+
+    def __str__(self):
+        return 'post_pk: {}\nauthor: {}\ncontent: {}'.format(self.post.pk, self.author.nickname, self.content)
 
 
 @receiver(post_save, sender=Comment, dispatch_uid='comment_save_update_comment_count')

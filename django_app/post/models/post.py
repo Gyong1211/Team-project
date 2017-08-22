@@ -52,6 +52,9 @@ class Post(models.Model):
         self.comment_count = self.comment_set.count()
         self.save()
 
+    def __str__(self):
+        return '\nauthor: {}\ncontent: {}'.format(self.author.nickname, self.content)
+
     class Meta:
         ordering = ['-created_date']
 
