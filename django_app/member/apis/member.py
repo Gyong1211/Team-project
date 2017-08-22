@@ -3,18 +3,17 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from member.serializers import UserUpdateSerializer, UserRelationCreateSerializer, UserPasswordUpdateSerializer
-from utils.paginations.member import ListPagination
-from utils.permissions import ObjectIsRequestUser
+from utils import paginations, permissions as custom_permissions
 from ..models import MyUser, UserRelation
-from ..serializers import UserSerializer, UserCreateSerializer
+from ..serializers import UserSerializer, UserCreateSerializer, UserUpdateSerializer, UserRelationCreateSerializer, \
+    UserPasswordUpdateSerializer
 
 
 class UserListCreateView(generics.ListCreateAPIView):
     queryset = MyUser.objects.all()
-    pagination_class = ListPagination
+    pagination_class = paginations.MemberListPagination
     filter_backends = (filters.SearchFilter, filters.DjangoFilterBackend)
-    search_fields = ('^nickname',)
+    search_fields = ('nickname',)
     filter_fields = ('group',)
 
     def get_serializer_class(self):
@@ -26,10 +25,10 @@ class UserListCreateView(generics.ListCreateAPIView):
 
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MyUser.objects.all()
-    pagination_class = ListPagination
+    pagination_class = paginations.MemberListPagination
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        ObjectIsRequestUser,
+        custom_permissions.ObjectIsRequestUser,
     )
 
     def get_serializer_class(self):
@@ -41,7 +40,7 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 class UserProfileImgDestroyView(APIView):
     permission_classes = (
-        ObjectIsRequestUser,
+        custom_permissions.ObjectIsRequestUser,
     )
 
     def get_object(self, pk):
@@ -80,7 +79,7 @@ class UserRelationCreateDestroyView(APIView):
 
 class UserPasswordUpdateView(APIView):
     permission_classes = (
-        ObjectIsRequestUser,
+        custom_permissions.ObjectIsRequestUser,
     )
 
     def get_object(self, pk):

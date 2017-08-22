@@ -132,11 +132,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         # 해당 유저(self)가 입력받은 유저의 follower인지 여부를 Boolean 값으로 반환
         return self.follower.filter(from_user=user).exists()
 
-    # @receiver(post_save, sender=AUTH_USER_MODEL)
-    # def create_auth_token(sender, instance=None, created=False, **kwargs):
-    #     if created:
-    #         Token.objects.create(user=instance)
-
 
 class UserRelation(models.Model):
     from_user = models.ForeignKey(MyUser, related_name='following')

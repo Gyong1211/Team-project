@@ -3,7 +3,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.permissions import ObjectGroupOwnerIsNotRequestUser
+from utils import permissions as custom_permissions
 from ..models import Membership
 from ..serializers.membership import MembershipCreateSerializer
 
@@ -15,7 +15,7 @@ __all__ = (
 class MembershipCreateDestroyView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
-        ObjectGroupOwnerIsNotRequestUser,
+        custom_permissions.ObjectGroupOwnerIsNotRequestUser,
     )
 
     def get_object(self):
