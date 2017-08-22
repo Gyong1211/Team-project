@@ -5,8 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from member.models import MyUser
-from utils import paginations
-from utils.permissions import ObjectAuthorIsRequestUser
+from utils import paginations, permissions as custom_permissions
 from ..models import Post
 from ..serializers import PostSerializer, PostCreateSerializer, PostUpdateSerializer, UserSerializer
 
@@ -20,28 +19,14 @@ __all__ = (
 )
 
 
-#  내가 속한 그룹의 Post List
-class MyGroupPostListView(generics.ListAPIView):
-    permission_classes = (
-        permissions.IsAuthenticated,
-    )
-    serializer_class = PostSerializer
-    pagination_class = paginations.PostListPagination
-
-    def get_queryset(self):
-        user = self.request.user
-        return Post.objects.filter(group__in=user.group.all())
-
-
-# 범용적 post list create
 class PostListCreateView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
     )
+    pagination_class = paginations.PostListPagination
     filter_backends = (filters.DjangoFilterBackend, filters.SearchFilter)
     filter_fields = ('author', 'group',)
     search_fields = ('content',)
-    pagination_class = paginations.PostListPagination
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -66,7 +51,7 @@ class PostListCreateView(generics.ListCreateAPIView):
 class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (
         permissions.IsAuthenticatedOrReadOnly,
-        ObjectAuthorIsRequestUser,
+        custom_permissions.ObjectAuthorIsRequestUser,
     )
 
     def get_serializer_class(self):
@@ -84,6 +69,18 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                        Post.objects.filter(Q(group__group_type="HIDDEN") & Q(author=self.request.user))
         else:
             return Post.objects.exclude(group__group_type="HIDDEN")
+
+
+class MyGroupPostListView(generics.ListAPIView):
+    serializer_class = PostSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    pagination_class = paginations.PostListPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(group__in=user.group.all())
 
 
 class PostLikeToggleView(APIView):

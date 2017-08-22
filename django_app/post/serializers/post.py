@@ -1,11 +1,8 @@
 from rest_framework import serializers
 
-from group.models import MyGroup
 from group.serializers import GroupSerializer
-from member.models import MyUser
 from member.serializers import UserSerializer
 from ..models import Post, PostLike
-from .comment import CommentSerializer
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -26,7 +23,6 @@ class PostSerializer(serializers.ModelSerializer):
             'created_date'
         )
         read_only_fields = (
-            'pk',
             'author',
             'group',
             'like_count',
@@ -74,13 +70,14 @@ class PostUpdateSerializer(serializers.ModelSerializer):
             'video',
             'like_count',
             'comment_count',
+            'created_date'
         )
         read_only_fields = (
-            'pk',
             'author',
             'group',
             'like_count',
             'comment_count',
+            'created_date'
         )
 
     def to_representation(self, obj):
@@ -96,4 +93,5 @@ class PostLikeSerializer(serializers.ModelSerializer):
             'pk',
             'user',
             'post',
+            'created_date'
         )

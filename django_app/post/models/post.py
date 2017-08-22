@@ -53,7 +53,7 @@ class Post(models.Model):
         self.save()
 
     def __str__(self):
-        return '\n작성자: {}\n내용: {}'.format(self.author, self.content)
+        return '\nauthor: {}\ncontent: {}'.format(self.author.nickname, self.content)
 
     class Meta:
         ordering = ['-created_date']
@@ -74,7 +74,7 @@ class PostLike(models.Model):
 
     class Meta:
         unique_together = (
-            ('post', 'user')
+            ('post', 'user'),
         )
 
 
