@@ -68,7 +68,12 @@ class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticatedOrReadOnly,
         ObjectAuthorIsRequestUser,
     )
-    serializer_class = PostUpdateSerializer
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return PostSerializer
+        else:
+            return PostUpdateSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -105,4 +110,3 @@ class PostLikeUserListView(generics.ListAPIView):
     def get_queryset(self):
         post_pk = self.kwargs['pk']
         return MyUser.objects.filter(postlike__post__pk=post_pk)
-
