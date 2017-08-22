@@ -35,8 +35,11 @@ class GroupSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
-        if self.context['request'].user.is_authenticated:
-            ret['is_member'] = self.context['request'].user.membership_set.filter(group=instance).exists()
+        user = self.context['request'].user
+        if user.is_authenticated:
+            ret['is_member'] = user.membership_set.filter(group=instance).exists()
+            if ret['is_member']:
+                ret['is_owner'] = instance.owner == user
         return ret
 
 
