@@ -23,6 +23,7 @@ class PostSerializer(serializers.ModelSerializer):
             'video',
             'like_count',
             'comment_count',
+            'created_date'
         )
         read_only_fields = (
             'pk',
@@ -30,6 +31,7 @@ class PostSerializer(serializers.ModelSerializer):
             'group',
             'like_count',
             'comment_count',
+            'created_date'
         )
 
     def to_representation(self, obj):
