@@ -1,6 +1,10 @@
 FROM        gyong1211/fc_tp_ubuntu
 MAINTAINER gyong1211@gmail.com
 
+#Timezone 변경
+ENV         TZ 'Asia/Seoul'
+RUN         echo $TZ > /etc/timezone && apt-get update && apt-get install -y tzdata && rm /etc/localtime && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && apt-get clean
+
 # 현재 경로의 모든 파일(프로젝트 파일)을 컨테이너의 /srv/app 폴더에 복사
 COPY        . /srv/app
 # 쉘에서 입력하는 cd /srv/app와 같은 명령어
@@ -15,6 +19,7 @@ RUN         git clone https://github.com/degose/Bond.git front
 #WORKDIR     /srv/front
 #RUN         npm install
 #RUN         npm run build
+
 
 # supervisor file 복사
 COPY        .config/supervisor/uwsgi.conf /etc/supervisor/conf.d/
