@@ -100,10 +100,10 @@ class UserRelationCreateSerializer(serializers.ModelSerializer):
         fields = (
             'from_user',
             'to_user',
+            'created_date',
         )
         read_only_fields = (
             'from_user',
-            'created_date',
         )
 
     def validate_to_user(self, to_user):

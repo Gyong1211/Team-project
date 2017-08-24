@@ -27,7 +27,6 @@ class PostSerializer(serializers.ModelSerializer):
             'group',
             'like_count',
             'comment_count',
-            'created_date'
         )
 
     def to_representation(self, obj):
@@ -45,8 +44,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
             'content',
             'image',
             'video',
-        )
-        read_only_fields = (
             'created_date',
         )
 
