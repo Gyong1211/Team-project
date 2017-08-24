@@ -21,9 +21,6 @@ class CommentSerializer(serializers.ModelSerializer):
             'content',
             'created_date'
         )
-        read_only_fields = (
-            'created_date',
-        )
 
 
 class CommentUpdateSerializer(serializers.ModelSerializer):
