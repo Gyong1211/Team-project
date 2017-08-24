@@ -1,13 +1,11 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin, AbstractUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.authtoken.models import Token
 
-from config.settings import AUTH_USER_MODEL
 from group.models import MyGroup
 from group.tasks import task_update_num_of_member
 from utils.fields import CustomImageField
@@ -170,7 +168,8 @@ class Membership(models.Model):
 @receiver(post_save, sender=Membership, dispatch_uid='membership_save_update_num_of_members')
 @receiver(post_delete, sender=Membership, dispatch_uid='membership_delete_update_num_of_members')
 def update_num_of_members(sender, instance, **kwargs):
-    if kwargs['signal'].receivers[0][0][0] == 'membership_save_update_num_of_members':
+    if 'membership_save_update_num_of_members' in [kwargs['signal'].receivers[i][0][0] for i in
+                                                   range(len(kwargs['signal'].receivers))]:
         instance.group.num_of_members += 1
     else:
         instance.group.num_of_members -= 1

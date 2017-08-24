@@ -1,4 +1,5 @@
 import time
+
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save, post_delete
@@ -81,7 +82,8 @@ class PostLike(models.Model):
 @receiver(post_save, sender=PostLike, dispatch_uid='postlike_save_update_like_count')
 @receiver(post_delete, sender=PostLike, dispatch_uid='postlike_delete_update_like_count')
 def update_like_count(sender, instance, **kwargs):
-    if kwargs['signal'].receivers[1][0][0] == 'postlike_save_update_like_count':
+    if 'postlike_save_update_like_count' in [kwargs['signal'].receivers[i][0][0] for i in
+                                             range(len(kwargs['signal'].receivers))]:
         instance.post.like_count += 1
     else:
         instance.post.like_count -= 1

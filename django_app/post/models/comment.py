@@ -26,8 +26,8 @@ class Comment(models.Model):
 @receiver(post_save, sender=Comment, dispatch_uid='comment_save_update_comment_count')
 @receiver(post_delete, sender=Comment, dispatch_uid='comment_delete_update_comment_count')
 def update_comment_count(sender, instance, **kwargs):
-    print(kwargs['signal'].receivers)
-    if kwargs['signal'].receivers[2][0][0] == 'comment_save_update_comment_count':
+    if 'comment_save_update_comment_count' in [kwargs['signal'].receivers[i][0][0] for i in
+                                               range(len(kwargs['signal'].receivers))]:
         instance.post.comment_count += 1
     else:
         instance.post.comment_count -= 1
